@@ -14,10 +14,9 @@ class SurveyResponseTest extends Delighted\TestCase {
 
         $req = $this->getMockRequest();
         $this->assertRequestHeadersOK($req);
-        $this->assertRequestAPIPathIs('/survey_responses', $req);
+        $this->assertRequestAPIPathIs('survey_responses', $req);
         $this->assertEquals('POST', $req->getMethod());
-        $this->assertEquals('application/json', (string) $req->getHeader('Content-Type'));
-        $this->assertRequestBodyEquals(json_encode($data), $req);
+        $this->assertRequestParamsEquals($data, $req);
     }
 
     public function testRetrievingASurveyResponse() {
@@ -31,7 +30,7 @@ class SurveyResponseTest extends Delighted\TestCase {
 
         $req = $this->getMockRequest();
         $this->assertRequestHeadersOK($req);
-        $this->assertRequestAPIPathIs('/survey_responses/456', $req);
+        $this->assertRequestAPIPathIs('survey_responses/456', $req);
         $this->assertEquals('GET', $req->getMethod());
     }
 
@@ -48,8 +47,7 @@ class SurveyResponseTest extends Delighted\TestCase {
 
         $req = $this->getMockRequest();
         $this->assertRequestHeadersOK($req);
-        $this->assertRequestAPIPathIs('/survey_responses/456', $req);
-        $this->assertEquals('expand%5B%5D=person', (string) $req->getQuery());
+        $this->assertRequestAPIPathIs('survey_responses/456?expand%5B%5D=person', $req);
         $this->assertEquals('GET', $req->getMethod());
     }
 
@@ -58,7 +56,7 @@ class SurveyResponseTest extends Delighted\TestCase {
         $this->addMockResponse(200, json_encode(array('id' => '456') + $data));
 
         $surveyResponse = new \Delighted\SurveyResponse(array('id' => '456',
-        'person' => '321', score => 1));
+        'person' => '321', 'score' => 1));
         $surveyResponse->person = '123';
         $surveyResponse->score = 10;
         $result = $surveyResponse->save();
@@ -69,7 +67,7 @@ class SurveyResponseTest extends Delighted\TestCase {
 
         $req = $this->getMockRequest();
         $this->assertRequestHeadersOK($req);
-        $this->assertRequestAPIPathIs('/survey_responses/456', $req);
+        $this->assertRequestAPIPathIs('survey_responses/456', $req);
         $this->assertEquals('PUT', $req->getMethod());
         $this->assertRequestBodyEquals(json_encode($data), $req);
     }
@@ -91,8 +89,7 @@ class SurveyResponseTest extends Delighted\TestCase {
 
         $req = $this->getMockRequest();
         $this->assertRequestHeadersOK($req);
-        $this->assertRequestAPIPathIs('/survey_responses');
-        $this->assertEquals('order=desc', (string) $req->getQuery());
+        $this->assertRequestAPIPathIs('survey_responses?order=desc', $req);
         $this->assertEquals('GET', $req->getMethod());
     }
 
@@ -108,9 +105,9 @@ class SurveyResponseTest extends Delighted\TestCase {
             $this->assertInstanceOf('\Delighted\SurveyResponse', $surveyResponse);
             foreach ($data[$i] as $k => $v) {
                 if ($k == 'person') {
-                    $this->assertInstanceOf('\Delighted\Person', $v);
+                    $this->assertInstanceOf('\Delighted\Person', $surveyResponses[$i]->$k);
                     foreach ($data[$i][$k] as $k2 => $v2) {
-                        $this->assertObjectPropertyIs($v2, $v, $k2);
+                        $this->assertObjectPropertyIs($v2, $surveyResponses[$i]->$k, $k2);
                     }
                 } else {
                     $this->assertObjectPropertyIs($v, $surveyResponse, $k);
@@ -120,8 +117,7 @@ class SurveyResponseTest extends Delighted\TestCase {
 
         $req = $this->getMockRequest();
         $this->assertRequestHeadersOK($req);
-        $this->assertRequestAPIPathIs('/survey_responses');
-        $this->assertEquals('expand%5B%5D=person', (string) $req->getQuery());
+        $this->assertRequestAPIPathIs('survey_responses?expand%5B%5D=person', $req);
         $this->assertEquals('GET', $req->getMethod());
     }
 }

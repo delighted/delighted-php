@@ -11,7 +11,7 @@ class MetricsTest extends Delighted\TestCase {
 
         $req = $this->getMockRequest();
         $this->assertEquals('GET', $req->getMethod());
-        $this->assertRequestAPIPathIs('/metrics', $req);
+        $this->assertRequestAPIPathIs('metrics', $req);
         $this->assertRequestHeadersOK($req);
 
     }

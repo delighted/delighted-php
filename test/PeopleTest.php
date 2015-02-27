@@ -13,24 +13,22 @@ class PeopleTest extends Delighted\TestCase {
 
         $req = $this->getMockRequest();
         $this->assertRequestHeadersOK($req);
-        $this->assertRequestAPIPathIs('/people', $req);
+        $this->assertRequestAPIPathIs('people', $req);
         $this->assertEquals('POST', $req->getMethod());
-        $this->assertRequestBodyEquals(json_encode($data), $req);
+        $this->assertRequestParamsEquals($data, $req);
     }
 
     public function testUnsubscribingAPerson() {
         $data = array('person_email' => 'person@example.com');
         $this->addMockResponse(200, json_encode(array('ok' => true)));
 
-        $surveyResponse = \Delighted\Unsubscribe::create($data);
+        $response = \Delighted\Unsubscribe::create($data);
 
         $req = $this->getMockRequest();
         $this->assertEquals('POST', $req->getMethod());
-        $this->assertRequestAPIPathIs('/unsubscribes', $req);
+        $this->assertRequestAPIPathIs('unsubscribes', $req);
         $this->assertRequestHeadersOK($req);
-        $this->assertEquals('application/json', (string) $req->getHeader('Content-Type'));
-
-        }
+    }
 
     public function  testDeletingPendingSurveyRequestsForAPerson() {
         $email = 'foo@bar.com';
@@ -41,9 +39,7 @@ class PeopleTest extends Delighted\TestCase {
 
         $req = $this->getMockRequest();
         $this->assertEquals('DELETE', $req->getMethod());
-        $this->assertRequestAPIPathIs('/people/'.urlencode($email).'/survey_requests/pending', $req);
+        $this->assertRequestAPIPathIs('people/'.urlencode($email).'/survey_requests/pending', $req);
         $this->assertRequestHeadersOK($req);
-        $this->assertEquals('application/json', (string) $req->getHeader('Content-Type'));
-
-        }
+    }
 }
