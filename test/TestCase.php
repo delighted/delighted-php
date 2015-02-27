@@ -8,28 +8,32 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     protected $mock;
 
     public function __construct($opts = array()) {
-        $this->client = Client::getClient(array('apiKey' => 'abc123'));
+        $this->client = TestClient::getInstance(array('apiKey' => 'abc123'));
         $this->mock = new \Guzzle\Plugin\Mock\MockPlugin();
-        $this->client->addSubscriber($this->mock);
+        $this->client->getAdapter()->addSubscriber($this->mock);
     }
 
     protected function assertObjectPropertyIs($value, $object, $property) {
-        $this->assertObjectHasAttribute($property, $object);
+        $this->assertTrue(isset($object->$property), get_class($object) . " has property $property");
         $this->assertSame($value, $object->$property);
     }
 
     protected function assertRequestHeadersOK($request) {
         $this->assertEquals('Basic '.base64_encode('abc123:'), (string) $request->getHeader('Authorization'));
         $this->assertEquals('application/json', $request->getHeader('Accept'));
-        $this->assertEquals('Delighted PHP API Client', (string) $request->getHeader('User-Agent'));
+        $this->assertEquals('Delighted PHP API Client ' . \Delighted\VERSION, (string) $request->getHeader('User-Agent'));
     }
 
     protected function assertRequestBodyEquals($body, $request) {
         $this->assertEquals($body, (string) $request->getBody());
     }
 
+    protected function assertRequestParamsEquals($params, $request) {
+        $this->assertEquals(http_build_query($params), (string) $request->getPostFields());
+    }
+
     protected function assertRequestAPIPathIs($path, $request) {
-        $this->assertEquals($this->client->getBaseUrl() . $path, $request->getURL());
+        $this->assertEquals($this->client->getAdapter()->getBaseUrl() . $path, $request->getURL());
     }
 
     protected function addMockResponse($statusCode, $body = null, $headers = array()) {
