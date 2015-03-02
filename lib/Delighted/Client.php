@@ -51,35 +51,38 @@ class Client {
 
 
     public static function get($path, $params = array()) {
-        $instance = self::getInstance();
-        $request = $instance->adapter->get($path);
-        $query = $request->getQuery();
-        foreach ($params as $k => $v) {
-            $query->add($k, $v);
-        }
-        $response = $request->send();
-        return json_decode((string) $response->getBody(), true);
+        return self::request('get', $path, array(), array('query' => $params));
     }
 
     public static function post($path, $params = array()) {
-        $instance = self::getInstance();
-        $request = $instance->adapter->post($path, array(), $params);
-        $response = $request->send();
-        return json_decode((string) $response->getBody(), true);
+        return self::request('post', $path, array(), $params);
     }
 
     public static function delete($path) {
-        $instance = self::getInstance();
-        $request = $instance->adapter->delete($path);
-        $response = $request->send();
-        return json_decode((string) $response->getBody(), true);
+        return self::request('delete', $path);
     }
 
     public static function put($path, $body = '', $headers = array()) {
+        return self::request('put', $path, $headers, $body);
+    }
+
+    protected static function request($method, $path, $headers = array(), $argsOrBody = array()) {
         $instance = self::getInstance();
-        $request = $instance->adapter->put($path, $headers, $body);
-        $response = $request->send();
-        return json_decode((string) $response->getBody(), true);
+        $expand = array();
+        $request = $instance->adapter->$method($path, $headers, $argsOrBody);
+        $request->getQuery()->setAggregator(new RailsQueryAggregator);
+        try {
+            $response = $request->send();
+            return json_decode((string) $response->getBody(), true);
+        } catch (\Exception $e) {
+            $r = $e->getResponse();
+            $code = $r->getStatusCode();
+            $body = array();
+            if (preg_match('#application/json(;|$)#',$r->getContentType())) {
+                $body = json_decode((string) $r->getBody(), true);
+            }
+            throw new RequestException($code, $body, $e);
+        }
     }
 
 }
