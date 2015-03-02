@@ -2,6 +2,12 @@
 
 Official PHP client for the [Delighted API](https://delighted.com/docs/api).
 
+## Requirements
+
+- PHP 5.3.3 or greater
+- The [Composer](http://getcomposer.org/) package manager
+- A [Delighted API](https://delighted.com/docs/api) key
+
 ## Installation
 
 Install via [Composer](http://getcomposer.org/) by adding this to your `composer.json`:
@@ -20,7 +26,7 @@ Then install via:
 composer install
 ```
 
-This will also install the [Guzzle](http://www.guzzlephp.org) HTTP request library that the Delighted PHP API Client depends upon.
+This will also install the [Guzzle](https://github.com/guzzle/guzzle3) HTTP request library that the Delighted PHP API Client depends upon.
 
 ## Configuration
 
