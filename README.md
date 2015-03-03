@@ -195,7 +195,7 @@ You can also easily mock Delighted API requests and responses by following the p
 For example:
 
 ```php
-$client = \Delighted\TestClient::getInstance(array('apiKey' => xyzzy'));
+$client = \Delighted\TestClient::getInstance(array('apiKey' => 'xyzzy'));
 $mock = new \Guzzle\Plugin\Mock\MockPlugin();
 $client->getAdapter()->addSubscriber($mock);
 $mockResponse = new \Guzzle\Http\Message\Response(200, array(),
