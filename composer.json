@@ -1,8 +1,12 @@
 {
     "name": "delighted/delighted-php",
     "description": "Delighted PHP API Client",
+    "keywords": ["delighted"],
+    "license": "MIT",
+    "homepage": "http://github.com/delighted/delighted-php",
     "require": {
-        "guzzlehttp/guzzle": "3.8.1"
+        "guzzlehttp/guzzle": "3.8.1",
+        "php": ">= 5.3.3"
     },
     "authors": [
         {
