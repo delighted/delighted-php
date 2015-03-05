@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/delighted/delighted-php.svg)](https://travis-ci.org/delighted/delighted-php)
+
 # Delighted PHP API Client (Beta)
 
 Official PHP client for the [Delighted API](https://delighted.com/docs/api).
