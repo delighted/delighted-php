@@ -1,4 +1,4 @@
-# Delighted PHP API Client
+# Delighted PHP API Client (Beta)
 
 Official PHP client for the [Delighted API](https://delighted.com/docs/api).
 
