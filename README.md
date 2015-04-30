@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/delighted/delighted-php.svg)](https://travis-ci.org/delighted/delighted-php)
+[![Build Status](https://img.shields.io/travis/delighted/delighted-php.svg)](https://travis-ci.org/delighted/delighted-php)
 
 # Delighted PHP API Client (Beta)
 
