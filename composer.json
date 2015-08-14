@@ -19,5 +19,10 @@
     },
     "autoload": {
         "psr-4": { "Delighted\\": "lib/Delighted/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
     }
 }
