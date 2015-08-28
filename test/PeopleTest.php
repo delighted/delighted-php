@@ -18,18 +18,6 @@ class PeopleTest extends Delighted\TestCase {
         $this->assertRequestParamsEquals($data, $req);
     }
 
-    public function testUnsubscribingAPerson() {
-        $data = array('person_email' => 'person@example.com');
-        $this->addMockResponse(200, json_encode(array('ok' => true)));
-
-        $response = \Delighted\Unsubscribe::create($data);
-
-        $req = $this->getMockRequest();
-        $this->assertEquals('POST', $req->getMethod());
-        $this->assertRequestAPIPathIs('unsubscribes', $req);
-        $this->assertRequestHeadersOK($req);
-    }
-
     public function  testDeletingPendingSurveyRequestsForAPerson() {
         $email = 'foo@bar.com';
         $this->addMockResponse(200, json_encode(array('ok' => true)));
