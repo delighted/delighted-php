@@ -84,6 +84,22 @@ Unsubscribing people:
 \Delighted\Unsubscribe::create(array('person_email' => 'ellie@icloud.com'))
 ```
 
+Listing unsubscribed people:
+
+```php
+// List all unsubscribed people, 20 per page, first 2 pages
+$unsubscribes = \Delighted\Unsubscribe::all()
+$unsubscribes_p2 = \Delighted\Unsubscribe::all(array('page' => 2));
+```
+
+Listing bounced people:
+
+```php
+// List all bounced people, 20 per page, first 2 pages
+$bounces = \Delighted\Bounce::all()
+$bounces_p2 = \Delighted\Bounce::all(array('page' => 2));
+```
+
 Deleting pending survey requests
 
 ```php
@@ -104,7 +120,7 @@ $survey_response1 = \Delighted\SurveyResponse::create(array('person' =>
 // Add *another* survey response (for the same person), score and comment
 $survey_response2 = \Delighted\SurveyResponse::create(array('person' =>
                                                              $person1->id,
-                                                             'score => 5,
+                                                             'score' => 5,
                                                              'comment' =>
                                                              'Really nice.'));
 ```
@@ -190,8 +206,8 @@ $myUrl = 'http://localhost/delighted-mock/';
 You can also easily mock Delighted API requests and responses by following the pattern that the API client's test cases use:
 
 - Use the `\Delighted\TestClient` class instead of `Delighted\Client`
-- Create a `\Guzzle\Plugin\Mock\MockPlugin` to mock the requests
-- Attach the mock plugin to the client
+- Create a `\Guzzle\Plugin\Mock\MockPlugin` to mock the requests. Because the `$client` is a shared instance, you'll want to use a shared `$mock`, too.
+- Attach the mock plugin to the client. Be sure to only add your shared `$mock` once, and be sure to call `$mock.clear()` and `$mock.flush()` during `setUp` or `tearDown`.
 - Make assertions about the request and response as desired.
 
 For example:
@@ -213,6 +229,7 @@ print $metrics->nps;
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+3. Run the tests (`php -f run-tests.php`)
+4. Commit your changes (`git commit -am 'Add some feature'`)
+5. Push to the branch (`git push origin my-new-feature`)
+6. Create new Pull Request

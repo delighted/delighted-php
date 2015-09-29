@@ -1,5 +1,6 @@
 {
     "name": "delighted/delighted",
+    "type": "library",
     "description": "Delighted PHP API Client",
     "keywords": ["delighted"],
     "license": "MIT",
@@ -9,6 +10,10 @@
         "php": ">= 5.3.3"
     },
     "authors": [
+        {
+            "name": "Ben Turner",
+            "email": "ben@delighted.com"
+        },
         {
             "name": "David Sklar",
             "email": "david.sklar@gmail.com"
