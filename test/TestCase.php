@@ -5,12 +5,22 @@ namespace Delighted;
 class TestCase extends \PHPUnit_Framework_TestCase {
 
     protected $client;
-    protected $mock;
+    protected static $mock = null;
 
     public function __construct($opts = array()) {
         $this->client = TestClient::getInstance(array('apiKey' => 'abc123'));
-        $this->mock = new \Guzzle\Plugin\Mock\MockPlugin();
-        $this->client->getAdapter()->addSubscriber($this->mock);
+        // because the client is a shared (static) instance, we need to ensure
+        // we don't add another mock to it for each TestCase instance
+        // constructed, so we use a static mock and only add it once.
+        if (!self::$mock) {
+            self::$mock = new \Guzzle\Plugin\Mock\MockPlugin();
+            $this->client->getAdapter()->addSubscriber(self::$mock);
+        }
+    }
+
+    protected function setUp() {
+        self::$mock->clearQueue();
+        self::$mock->flush();
     }
 
     protected function assertObjectPropertyIs($value, $object, $property) {
@@ -37,11 +47,11 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     protected function addMockResponse($statusCode, $body = null, $headers = array()) {
-        $this->mock->addResponse(new \Guzzle\Http\Message\Response($statusCode, $headers, $body));
+        self::$mock->addResponse(new \Guzzle\Http\Message\Response($statusCode, $headers, $body));
     }
 
     protected function getMockRequest($id = 0) {
-        $reqs = $this->mock->getReceivedRequests();
+        $reqs = self::$mock->getReceivedRequests();
         return $reqs[$id];
     }
 
