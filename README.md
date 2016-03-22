@@ -105,7 +105,7 @@ Deleting pending survey requests
 ```php
 // Delete all pending (scheduled but unsent) survey requests for a person,
 // by email.
-\Delighted\SurveyRequest::delete_pending(array('person_email' =>
+\Delighted\SurveyRequest::deletePending(array('person_email' =>
                                                'ellie@icloud.com'));
 ```
 
