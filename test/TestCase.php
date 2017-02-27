@@ -2,28 +2,34 @@
 
 namespace Delighted;
 
-class TestCase extends \PHPUnit_Framework_TestCase
-{
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use PHPUnit_Framework_TestCase;
 
+class TestCase extends PHPUnit_Framework_TestCase
+{
+    /** @var TestClient */
     protected $client;
-    protected static $mock = null;
+
+    /** @var \GuzzleHttp\HandlerStack */
+    protected static $mock_stack;
+
+    /** @var \GuzzleHttp\Handler\MockHandler */
+    protected static $mock_handler;
 
     public function __construct($opts = [])
     {
-        $this->client = TestClient::getInstance(['apiKey' => 'abc123']);
-        // because the client is a shared (static) instance, we need to ensure
-        // we don't add another mock to it for each TestCase instance
-        // constructed, so we use a static mock and only add it once.
-        if (! self::$mock) {
-            self::$mock = new \Guzzle\Plugin\Mock\MockPlugin();
-            $this->client->getAdapter()->addSubscriber(self::$mock);
+        if (! self::$mock_stack) {
+            self::$mock_stack = HandlerStack::create(new MockHandler());
         }
+        $this->client = TestClient::getInstance(['apiKey' => 'abc123', 'handler' => self::$mock_stack]);
     }
 
     protected function setUp()
     {
-        self::$mock->clearQueue();
-        self::$mock->flush();
+
     }
 
     protected function assertObjectPropertyIs($value, $object, $property)
@@ -32,11 +38,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($value, $object->$property);
     }
 
-    protected function assertRequestHeadersOK($request)
+    protected function assertRequestHeadersOK(Request $request)
     {
-        $this->assertEquals('Basic ' . base64_encode('abc123:'), (string) $request->getHeader('Authorization'));
-        $this->assertEquals('application/json', $request->getHeader('Accept'));
-        $this->assertEquals('Delighted PHP API Client ' . \Delighted\VERSION, (string) $request->getHeader('User-Agent'));
+        $this->assertEquals('Basic ' . base64_encode('abc123:'), $request->getHeader('Authorization')[0]);
+        $this->assertEquals('application/json', $request->getHeader('Accept')[0]);
+        $this->assertEquals('Delighted PHP API Client ' . \Delighted\VERSION, $request->getHeader('User-Agent')[0]);
     }
 
     protected function assertRequestBodyEquals($body, $request)
@@ -49,21 +55,25 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(http_build_query($params), (string) $request->getPostFields());
     }
 
-    protected function assertRequestAPIPathIs($path, $request)
+    protected function assertRequestAPIPathIs($path, Request $request)
     {
-        $this->assertEquals($this->client->getAdapter()->getBaseUrl() . $path, $request->getURL());
+        $this->assertEquals((string) $this->client->getAdapter()->getConfig('base_uri') . $path, (string) $request->getUri());
     }
 
     protected function addMockResponse($statusCode, $body = null, $headers = [])
     {
-        self::$mock->addResponse(new \Guzzle\Http\Message\Response($statusCode, $headers, $body));
+        // Create a mock and add response.
+        self::$mock_handler = new MockHandler([
+            new Response($statusCode, $headers, $body),
+        ]);
+        self::$mock_stack->setHandler(self::$mock_handler);
     }
 
-    protected function getMockRequest($id = 0)
+    /**
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function getMockRequest()
     {
-        $reqs = self::$mock->getReceivedRequests();
-
-        return $reqs[$id];
+        return self::$mock_handler->getLastRequest();
     }
-
 }
