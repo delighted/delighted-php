@@ -45,18 +45,21 @@ class TestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals('Delighted PHP API Client ' . \Delighted\VERSION, $request->getHeader('User-Agent')[0]);
     }
 
-    protected function assertRequestBodyEquals($body, $request)
+    protected function assertRequestBodyEquals($body, Request $request)
     {
         $this->assertEquals($body, (string) $request->getBody());
     }
 
-    protected function assertRequestParamsEquals($params, $request)
+    protected function assertRequestParamsEquals($params, Request $request)
     {
-        $this->assertEquals(http_build_query($params), (string) $request->getPostFields());
+        $this->assertEquals(http_build_query($params), (string) $request->getBody());
     }
 
     protected function assertRequestAPIPathIs($path, Request $request)
     {
+        dump($path);
+        dump((string) $request->getUri());
+        die;
         $this->assertEquals((string) $this->client->getAdapter()->getConfig('base_uri') . $path, (string) $request->getUri());
     }
 
