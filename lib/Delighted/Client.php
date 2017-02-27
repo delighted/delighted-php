@@ -3,6 +3,7 @@
 namespace Delighted;
 
 
+use Exception;
 use GuzzleHttp\Psr7\Request;
 
 require __DIR__ . '/Version.php';
@@ -16,7 +17,7 @@ class Client
 
     protected $adapter = null;
 
-    protected function __construct($options = [])
+    protected function __construct(array $options = [])
     {
         if (! isset($options['apiKey'])) {
             throw new \InvalidArgumentException('No apiKey specified');
@@ -39,11 +40,11 @@ class Client
 
         $params = [
             'base_uri' => $baseUrl,
-            'auth' => $auth,
-            'headers' => [
+            'auth'     => $auth,
+            'headers'  => [
                 'User-Agent' => 'Delighted PHP API Client ' . \Delighted\VERSION,
-                'Accept' => 'application/json',
-            ]
+                'Accept'     => 'application/json',
+            ],
         ];
         if (isset($options['handler'])) {
             $params['handler'] = $options['handler'];
@@ -51,7 +52,7 @@ class Client
         $this->adapter = new \GuzzleHttp\Client($params);
     }
 
-    public static function getInstance($options = null)
+    public static function getInstance(array $options = null)
     {
         if (is_null(self::$instance)) {
             if ((! isset($options['apiKey'])) && isset(self::$apiKey)) {
@@ -68,15 +69,30 @@ class Client
         self::$apiKey = $key;
     }
 
-
-    public static function get($path, $params = [])
+    public static function get($path, array $params = [])
     {
-        return self::request('get', $path, [], ['query' => $params]);
+        $query = self::convertQueryStringToRubyStyle($params);
+        $args = ! empty($query) ? ['query' => $query] : [];
+
+        return self::request('get', $path, [], $args);
+    }
+
+    public static function convertQueryStringToRubyStyle(array $params = [])
+    {
+        if (empty($params)) {
+            return null;
+        }
+
+        // Covert to ruby style notation
+        $query = http_build_query($params);
+        $string = preg_replace('#%5B(?:[0-9]|[1-9][0-9]+)%5D=#', '%5B%5D=', $query);
+
+        return rawurldecode($string);
     }
 
     public static function post($path, $params = [])
     {
-        return self::request('post', $path, [], $params);
+        return self::request('post', $path, [], ['form_params' => $params]);
     }
 
     public static function delete($path)
@@ -86,24 +102,19 @@ class Client
 
     public static function put($path, $body = '', $headers = [])
     {
-        return self::request('put', $path, $headers, $body);
+        return self::request('put', $path, $headers, ['body' => $body]);
     }
 
     protected static function request($method, $path, $headers = [], $argsOrBody = [])
     {
         $instance = self::getInstance();
-        $expand = [];
 
-        $body = is_array($argsOrBody) ? http_build_query($argsOrBody) : '';
-
-        $request = new Request($method, $path, $headers, $body);
-
-        //$request->getQuery()->setAggregator(new RailsQueryAggregator);
         try {
-            $response = $instance->adapter->send($request);
+            $request = new Request($method, $path, $headers);
+            $response = $instance->adapter->send($request, $argsOrBody);
 
             return json_decode((string) $response->getBody(), true);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $r = $e->getResponse();
             $code = $r->getStatusCode();
             $body = [];
