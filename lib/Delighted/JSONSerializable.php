@@ -3,9 +3,12 @@
 namespace Delighted;
 
 if (! interface_exists('JSONSerializable')) {
-    interface JSONSerializable {
+    interface JSONSerializable
+    {
         public function jsonSerialize();
     }
 } else {
-    interface JSONSerializable extends \JSONSerializable {}
+    interface JSONSerializable extends \JSONSerializable
+    {
+    }
 }

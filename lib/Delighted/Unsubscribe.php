@@ -2,18 +2,22 @@
 
 namespace Delighted;
 
-class Unsubscribe extends Resource {
+class Unsubscribe extends Resource
+{
 
-    public static function create($params = array()) {
+    public static function create($params = [])
+    {
         $response = Client::post('unsubscribes', $params);
     }
 
-    public static function all($params = array()) {
+    public static function all($params = [])
+    {
         $responses = Client::get('unsubscribes', $params);
-        $r = array();
+        $r = [];
         foreach ($responses as $unsubscribe) {
             $r[] = new Unsubscribe($unsubscribe);
         }
+
         return $r;
     }
 }

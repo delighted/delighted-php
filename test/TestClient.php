@@ -2,8 +2,10 @@
 
 namespace Delighted;
 
-class TestClient extends Client {
-    public function getAdapter() {
+class TestClient extends Client
+{
+    public function getAdapter()
+    {
         return $this->adapter;
     }
 }

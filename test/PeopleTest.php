@@ -1,10 +1,12 @@
 <?php
 
-class PeopleTest extends Delighted\TestCase {
+class PeopleTest extends Delighted\TestCase
+{
 
-    public function testCreatingOrUpdatingAPerson() {
-        $data = array('email' => 'foo@bar.com');
-        $this->addMockResponse(200, json_encode(array('id' => '123', 'email' => 'foo@bar.com')));
+    public function testCreatingOrUpdatingAPerson()
+    {
+        $data = ['email' => 'foo@bar.com'];
+        $this->addMockResponse(200, json_encode(['id' => '123', 'email' => 'foo@bar.com']));
 
         $person = \Delighted\Person::create($data);
         $this->assertInstanceOf('Delighted\Person', $person);
@@ -18,16 +20,17 @@ class PeopleTest extends Delighted\TestCase {
         $this->assertRequestParamsEquals($data, $req);
     }
 
-    public function  testDeletingPendingSurveyRequestsForAPerson() {
+    public function testDeletingPendingSurveyRequestsForAPerson()
+    {
         $email = 'foo@bar.com';
-        $this->addMockResponse(200, json_encode(array('ok' => true)));
+        $this->addMockResponse(200, json_encode(['ok' => true]));
 
-        $result = \Delighted\SurveyRequest::deletePending(array('person_email' => $email));
-        $this->assertSame(array('ok' => true), $result);
+        $result = \Delighted\SurveyRequest::deletePending(['person_email' => $email]);
+        $this->assertSame(['ok' => true], $result);
 
         $req = $this->getMockRequest();
         $this->assertEquals('DELETE', $req->getMethod());
-        $this->assertRequestAPIPathIs('people/'.urlencode($email).'/survey_requests/pending', $req);
+        $this->assertRequestAPIPathIs('people/' . urlencode($email) . '/survey_requests/pending', $req);
         $this->assertRequestHeadersOK($req);
     }
 }
