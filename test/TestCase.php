@@ -57,9 +57,6 @@ class TestCase extends PHPUnit_Framework_TestCase
 
     protected function assertRequestAPIPathIs($path, Request $request)
     {
-        dump($path);
-        dump((string) $request->getUri());
-        die;
         $this->assertEquals((string) $this->client->getAdapter()->getConfig('base_uri') . $path, (string) $request->getUri());
     }
 
