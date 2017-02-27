@@ -6,7 +6,7 @@ Official PHP client for the [Delighted API](https://delighted.com/docs/api).
 
 ## Requirements
 
-- PHP 5.3.3 or greater
+- PHP 5.5 or greater
 - The [Composer](http://getcomposer.org/) package manager
 - A [Delighted API](https://delighted.com/docs/api) key
 
@@ -17,7 +17,7 @@ Install via [Composer](http://getcomposer.org/) by adding this to your `composer
 ```
 {
   "require": {
-    "delighted/delighted": "1.*"
+    "delighted/delighted": "2.*"
   }
 }
 ```
@@ -28,7 +28,7 @@ Then install via:
 composer install
 ```
 
-This will also install the [Guzzle](https://github.com/guzzle/guzzle3) HTTP request library that the Delighted PHP API Client depends upon.
+This will also install the [Guzzle](https://github.com/guzzle/guzzle) HTTP request library that the Delighted PHP API Client depends upon.
 
 ## Configuration
 
@@ -46,42 +46,41 @@ Adding/updating people and scheduling surveys:
 
 ```php
 // Add a new person, and schedule a survey immediately
-$person1 = \Delighted\Person::create(array('email' =>
-                                           'ellie@icloud.com'));
+$person1 = \Delighted\Person::create(['email' => 'ellie@icloud.com']);
 
 // Add a new person, and schedule a survey after 1 minute (60 seconds)
-$person2 = \Delighted\Person::create(array('email' =>
+$person2 = \Delighted\Person::create(['email' =>
                                            'richard.nguyen@aol.com',
-                                           'delay' => 60));
+                                           'delay' => 60]);
 
 // Add a new person, but do not schedule a survey
-$person3 = \Delighted\Person::create(array('email' =>
+$person3 = \Delighted\Person::create(['email' =>
                                            'gvargas@gmail.com',
-                                           'send' => false));
+                                           'send' => false]);
 
 // Add a new person with full set of attributes, including a custom question
 // product name, and schedule a survey with a 30 second delay
-$props = array('customer_id' => 123, 'country' => 'USA',
-               'question_product_name' => 'The London Trench');
-$person4 = \Delighted\Person::create(array('email' =>
+$props = ['customer_id' => 123, 'country' => 'USA',
+               'question_product_name' => 'The London Trench'];
+$person4 = \Delighted\Person::create(['email' =>
                                            'alexis_burke@austinstephens.com',
                                            'name' => 'Alexis Burke',
                                            'properties' => $props,
-                                           'delay' => 30));
+                                           'delay' => 30]);
 
 // Update an existing person (identified by email), adding a name, without
 // scheduling a survey
-$updated_person1 = \Delighted\Person::create(array('email' =>
+$updated_person1 = \Delighted\Person::create(['email' =>
                                                    'ellie@icloud.com',
                                                    'name' => 'Ellie Newman',
-                                                   'send' => false));
+                                                   'send' => false]);
 ```
 
 Unsubscribing people:
 
 ```php
 // Unsubscribe an existing person
-\Delighted\Unsubscribe::create(array('person_email' => 'ellie@icloud.com'))
+\Delighted\Unsubscribe::create(['person_email' => 'ellie@icloud.com'])
 ```
 
 Listing unsubscribed people:
@@ -89,7 +88,7 @@ Listing unsubscribed people:
 ```php
 // List all unsubscribed people, 20 per page, first 2 pages
 $unsubscribes = \Delighted\Unsubscribe::all()
-$unsubscribes_p2 = \Delighted\Unsubscribe::all(array('page' => 2));
+$unsubscribes_p2 = \Delighted\Unsubscribe::all(['page' => 2]);
 ```
 
 Listing bounced people:
@@ -97,7 +96,7 @@ Listing bounced people:
 ```php
 // List all bounced people, 20 per page, first 2 pages
 $bounces = \Delighted\Bounce::all()
-$bounces_p2 = \Delighted\Bounce::all(array('page' => 2));
+$bounces_p2 = \Delighted\Bounce::all(['page' => 2]);
 ```
 
 Deleting pending survey requests
@@ -105,24 +104,23 @@ Deleting pending survey requests
 ```php
 // Delete all pending (scheduled but unsent) survey requests for a person,
 // by email.
-\Delighted\SurveyRequest::deletePending(array('person_email' =>
-                                               'ellie@icloud.com'));
+\Delighted\SurveyRequest::deletePending(['person_email' => 'ellie@icloud.com']);
 ```
 
 Adding survey responses:
 
 ```php
 // Add a survey response, score only
-$survey_response1 = \Delighted\SurveyResponse::create(array('person' =>
+$survey_response1 = \Delighted\SurveyResponse::create(['person' =>
                                                             $person1->id,
-                                                            'score' => 10));
+                                                            'score' => 10]);
 
 // Add *another* survey response (for the same person), score and comment
-$survey_response2 = \Delighted\SurveyResponse::create(array('person' =>
+$survey_response2 = \Delighted\SurveyResponse::create(['person' =>
                                                              $person1->id,
                                                              'score' => 5,
                                                              'comment' =>
-                                                             'Really nice.'));
+                                                             'Really nice.']);
 ```
 
 Retrieving a survey response:
@@ -141,7 +139,7 @@ $survey_response4->score = 10;
 $survey_response4->save();
 
 // Update (or add) survey response properties
-$survey_response4->person_properties = array('segment' => 'Online' );
+$survey_response4->person_properties = ['segment' => 'Online'];
 $survey_response4->save();
 
 // Update person who recorded the survey response
@@ -154,25 +152,24 @@ Listing survey responses:
 ```php
 // List all survey responses, 20 per page, first 2 pages
 $responses_p1 = \Delighted\SurveyResponse::all()
-$responses_p2 = \Delighted\SurveyResponse::all(array('page' => 2));
+$responses_p2 = \Delighted\SurveyResponse::all(['page' => 2]);
 
 // List all survey responses, 20 per page, expanding person object
-$responses_p1_expand = \Delighted\SurveyResponse::all(array('expand' =>
-                                                            array('person')));
+$responses_p1_expand = \Delighted\SurveyResponse::all(['expand' => ['person']]);
 // The person property is a \Delighted\Person object now
 print $responses_p1_expand[0]->person->name;
 
 // List all survey responses, 20 per page, for a specific trend (ID: 123)
-$responses_p1_trend = \Delighted\SurveyResponse::all(array('trend' => '123'));
+$responses_p1_trend = \Delighted\SurveyResponse::all(['trend' => '123']);
 
 // List all survey responses, 20 per page, in reverse chronological order
 // (newest first)
-$responses_p1_desc = \Delighted\SurveyResponse::all(array('order' => 'desc'));
+$responses_p1_desc = \Delighted\SurveyResponse::all(['order' => 'desc']);
 
 // List all survey responses, 100 per page, page 5, with a time range
-$filtered_survey_responses = \Delighted\SurveyResponse::all(array('page' => 5,
+$filtered_survey_responses = \Delighted\SurveyResponse::all(['page' => 5,
   'per_page' => 100, 'since' => gmmktime(0,0,0,10,1,2013),
-  'until' => gmmktime(0,0,0,11,1,2013)));
+  'until' => gmmktime(0,0,0,11,1,2013)]);
 ```
 
 Retrieving metrics:
@@ -183,13 +180,13 @@ $metrics = \Delighted\Metrics::retrieve()
 
 // Get current metrics, 30-day simple moving average, from most recent response
 // for a specific trend (ID: 123)
-$metrics = \Delighted\Metrics::retrieve(array('trend' => '123'));
+$metrics = \Delighted\Metrics::retrieve(['trend' => '123']);
 
 // Get metrics, for given range
-$metrics = \Delighted\Metrics::retrieve(array('since' =>
+$metrics = \Delighted\Metrics::retrieve(['since' =>
                                               gmmktime(0,0,0,10,1,2013),
                                               'until' =>
-                                              gmmktime(0,0,0,11,1,2013)));
+                                              gmmktime(0,0,0,11,1,2013)]);
 ```
 
 ## Advanced Configuration and Testing
@@ -200,25 +197,25 @@ The chief option you may want to change is `baseUrl`, which defaults to `https:/
 
 ```php
 $myUrl = 'http://localhost/delighted-mock/';
-\Delighted\Client::getInstance(array('baseUrl' => $myUrl));
+\Delighted\Client::getInstance(['baseUrl' => $myUrl]);
 ```
 
 You can also easily mock Delighted API requests and responses by following the pattern that the API client's test cases use:
 
 - Use the `\Delighted\TestClient` class instead of `Delighted\Client`
-- Create a `\Guzzle\Plugin\Mock\MockPlugin` to mock the requests. Because the `$client` is a shared instance, you'll want to use a shared `$mock`, too.
-- Attach the mock plugin to the client. Be sure to only add your shared `$mock` once, and be sure to call `$mock.clear()` and `$mock.flush()` during `setUp` or `tearDown`.
+- Create a `\GuzzleHttp\Handler\MockHandler` to mock the requests. Because the `$client` is a shared instance, you'll want to use a shared `$mock_handler`, too.
+- Create `\GuzzleHttp\HandlerStack` and pass to the client.
 - Make assertions about the request and response as desired.
 
 For example:
 
 ```php
-$client = \Delighted\TestClient::getInstance(array('apiKey' => 'xyzzy'));
-$mock = new \Guzzle\Plugin\Mock\MockPlugin();
-$client->getAdapter()->addSubscriber($mock);
-$mockResponse = new \Guzzle\Http\Message\Response(200, array(),
-                                                  array('nps' => 10));
-$mock->addResponse($mockResponse);
+$mock_response = new \GuzzleHttp\Psr7\Response(200, [], ['nps' => 10]);
+$mock_handler = new \GuzzleHttp\Handler\MockHandler([
+            $mock_response,
+        ]);
+$handler_stack = \GuzzleHttp\HandlerStack::create($mock_handler);        
+$client = \Delighted\TestClient::getInstance(['apiKey' => 'xyzzy', 'handler' => $handler_stack]);
 $metrics = Delighted\Metrics::retrieve();
 
 // This prints 10 -- the value comes from the mock response
