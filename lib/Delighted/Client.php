@@ -2,6 +2,9 @@
 
 namespace Delighted;
 
+
+use GuzzleHttp\Psr7\Request;
+
 require __DIR__ . '/Version.php';
 
 class Client
@@ -34,9 +37,18 @@ class Client
             $auth = [self::$apiKey, '', 'Basic'];
         }
 
-        $this->adapter = new \Guzzle\Http\Client($baseUrl, ['request.options' => ['auth' => $auth]]);
-        $this->adapter->setUserAgent('Delighted PHP API Client ' . \Delighted\VERSION);
-        $this->adapter->setDefaultOption('headers/Accept', 'application/json');
+        $params = [
+            'base_uri' => $baseUrl,
+            'auth' => $auth,
+            'headers' => [
+                'User-Agent' => 'Delighted PHP API Client ' . \Delighted\VERSION,
+                'Accept' => 'application/json',
+            ]
+        ];
+        if (isset($options['handler'])) {
+            $params['handler'] = $options['handler'];
+        }
+        $this->adapter = new \GuzzleHttp\Client($params);
     }
 
     public static function getInstance($options = null)
@@ -81,10 +93,14 @@ class Client
     {
         $instance = self::getInstance();
         $expand = [];
-        $request = $instance->adapter->$method($path, $headers, $argsOrBody);
-        $request->getQuery()->setAggregator(new RailsQueryAggregator);
+
+        $body = is_array($argsOrBody) ? http_build_query($argsOrBody) : '';
+
+        $request = new Request($method, $path, $headers, $body);
+
+        //$request->getQuery()->setAggregator(new RailsQueryAggregator);
         try {
-            $response = $request->send();
+            $response = $instance->adapter->send($request);
 
             return json_decode((string) $response->getBody(), true);
         } catch (\Exception $e) {
