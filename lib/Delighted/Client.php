@@ -47,6 +47,13 @@ class Client {
 
     public static function setApiKey($key) {
         self::$apiKey = $key;
+
+        $instance = self::getInstance();
+        $instance->adapter->setConfig(array(
+            'request.options' => array(
+                'auth' => array($key, '', 'Basic'),
+            ),
+        ));
     }
 
 
