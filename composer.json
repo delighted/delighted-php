@@ -28,6 +28,7 @@
     },
     "extra": {
         "branch-alias": {
+            "dev-master": "1.0-dev",
             "dev-2.x": "2.0-dev"
         }
     }
