@@ -49,31 +49,28 @@ Adding/updating people and scheduling surveys:
 $person1 = \Delighted\Person::create(['email' => 'ellie@icloud.com']);
 
 // Add a new person, and schedule a survey after 1 minute (60 seconds)
-$person2 = \Delighted\Person::create(['email' =>
-                                           'richard.nguyen@aol.com',
-                                           'delay' => 60]);
+$person2 = \Delighted\Person::create(['email' => 'richard.nguyen@aol.com', 'delay' => 60]);
 
 // Add a new person, but do not schedule a survey
-$person3 = \Delighted\Person::create(['email' =>
-                                           'gvargas@gmail.com',
-                                           'send' => false]);
+$person3 = \Delighted\Person::create(['email' => 'gvargas@gmail.com', 'send' => false]);
 
 // Add a new person with full set of attributes, including a custom question
 // product name, and schedule a survey with a 30 second delay
-$props = ['customer_id' => 123, 'country' => 'USA',
-               'question_product_name' => 'The London Trench'];
-$person4 = \Delighted\Person::create(['email' =>
-                                           'alexis_burke@austinstephens.com',
-                                           'name' => 'Alexis Burke',
-                                           'properties' => $props,
-                                           'delay' => 30]);
+$props = ['customer_id' => 123, 'country' => 'USA', 'question_product_name' => 'The London Trench'];
+$person4 = \Delighted\Person::create([
+                                        'email' => 'alexis_burke@austinstephens.com',
+                                        'name' => 'Alexis Burke',
+                                        'properties' => $props,
+                                        'delay' => 30
+                                    ]);
 
 // Update an existing person (identified by email), adding a name, without
 // scheduling a survey
-$updated_person1 = \Delighted\Person::create(['email' =>
-                                                   'ellie@icloud.com',
-                                                   'name' => 'Ellie Newman',
-                                                   'send' => false]);
+$updated_person1 = \Delighted\Person::create([
+                                                'email' => 'ellie@icloud.com',
+                                                'name' => 'Ellie Newman',
+                                                'send' => false
+                                            ]);
 ```
 
 Unsubscribing people:
@@ -111,16 +108,14 @@ Adding survey responses:
 
 ```php
 // Add a survey response, score only
-$survey_response1 = \Delighted\SurveyResponse::create(['person' =>
-                                                            $person1->id,
-                                                            'score' => 10]);
+$survey_response1 = \Delighted\SurveyResponse::create(['person' => $person1->id, 'score' => 10]);
 
 // Add *another* survey response (for the same person), score and comment
-$survey_response2 = \Delighted\SurveyResponse::create(['person' =>
-                                                             $person1->id,
-                                                             'score' => 5,
-                                                             'comment' =>
-                                                             'Really nice.']);
+$survey_response2 = \Delighted\SurveyResponse::create([
+                                                         'person' => $person1->id,
+                                                         'score' => 5,
+                                                         'comment' => 'Really nice.'
+                                                      ]);
 ```
 
 Retrieving a survey response:
@@ -167,9 +162,12 @@ $responses_p1_trend = \Delighted\SurveyResponse::all(['trend' => '123']);
 $responses_p1_desc = \Delighted\SurveyResponse::all(['order' => 'desc']);
 
 // List all survey responses, 100 per page, page 5, with a time range
-$filtered_survey_responses = \Delighted\SurveyResponse::all(['page' => 5,
-  'per_page' => 100, 'since' => gmmktime(0,0,0,10,1,2013),
-  'until' => gmmktime(0,0,0,11,1,2013)]);
+$filtered_survey_responses = \Delighted\SurveyResponse::all([
+                                                               'page' => 5,
+                                                               'per_page' => 100, 
+                                                               'since' => gmmktime(0, 0, 0, 10, 1, 2013),
+                                                               'until' => gmmktime(0, 0, 0, 11, 1, 2013)
+                                                            ]);
 ```
 
 Retrieving metrics:
@@ -183,10 +181,10 @@ $metrics = \Delighted\Metrics::retrieve()
 $metrics = \Delighted\Metrics::retrieve(['trend' => '123']);
 
 // Get metrics, for given range
-$metrics = \Delighted\Metrics::retrieve(['since' =>
-                                              gmmktime(0,0,0,10,1,2013),
-                                              'until' =>
-                                              gmmktime(0,0,0,11,1,2013)]);
+$metrics = \Delighted\Metrics::retrieve([
+                                           'since' => gmmktime(0, 0, 0, 10, 1, 2013), 
+                                           'until' => gmmktime(0, 0, 0, 11, 1, 2013)
+                                        ]);
 ```
 
 ## Advanced Configuration and Testing
@@ -211,9 +209,7 @@ For example:
 
 ```php
 $mock_response = new \GuzzleHttp\Psr7\Response(200, [], ['nps' => 10]);
-$mock_handler = new \GuzzleHttp\Handler\MockHandler([
-            $mock_response,
-        ]);
+$mock_handler = new \GuzzleHttp\Handler\MockHandler([$mock_response]);
 $handler_stack = \GuzzleHttp\HandlerStack::create($mock_handler);        
 $client = \Delighted\TestClient::getInstance(['apiKey' => 'xyzzy', 'handler' => $handler_stack]);
 $metrics = Delighted\Metrics::retrieve();
