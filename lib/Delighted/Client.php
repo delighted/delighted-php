@@ -6,16 +6,17 @@ require __DIR__ . '/Version.php';
 class Client {
 
     const DEFAULT_BASE_URL = 'https://api.delighted.com/v1/';
-    protected static $instance = null;
-    protected static $apiKey = null;
-
+    protected $apiKey = null;
     protected $adapter = null;
 
-    protected function __construct($options = array()) {
+    protected static $instance = null;
+    protected static $sharedApiKey = null;
+
+    public function __construct($options = array()) {
         if (! isset($options['apiKey'])) {
             throw new \InvalidArgumentException('No apiKey specified');
         }
-        self::$apiKey = $options['apiKey'];
+        $this->apiKey = $options['apiKey'];
         unset($options['apiKey']);
 
         if (isset($options['baseUrl'])) {
@@ -28,55 +29,48 @@ class Client {
         if (isset($options['auth'])) {
             $auth = $options['auth'];
         } else {
-            $auth = array(self::$apiKey, '', 'Basic');
+            $auth = array($this->apiKey, '', 'Basic');
         }
 
         $this->adapter = new \Guzzle\Http\Client($baseUrl, array('request.options' => array('auth' => $auth)));
         $this->adapter->setUserAgent('Delighted PHP API Client ' . \Delighted\VERSION);
         $this->adapter->setDefaultOption('headers/Accept', 'application/json');
     }
+
     public static function getInstance($options = null) {
         if (is_null(self::$instance)) {
-            if ((! isset($options['apiKey'])) && isset(self::$apiKey)) {
-                $options['apiKey'] = self::$apiKey;
+            if (!isset($options['apiKey']) && isset(self::$sharedApiKey)) {
+                $options['apiKey'] = self::$sharedApiKey;
             }
             self::$instance = new static($options);
+            self::$sharedApiKey = $options['apiKey'];
         }
         return self::$instance;
     }
 
     public static function setApiKey($key) {
-        self::$apiKey = $key;
-
-        $instance = self::getInstance();
-        $instance->adapter->setConfig(array(
-            'request.options' => array(
-                'auth' => array($key, '', 'Basic'),
-            ),
-        ));
+        self::$sharedApiKey = $key;
     }
 
-
-    public static function get($path, $params = array()) {
-        return self::request('get', $path, array(), array('query' => $params));
+    public function get($path, $params = array()) {
+        return $this->request('get', $path, array(), array('query' => $params));
     }
 
-    public static function post($path, $params = array()) {
-        return self::request('post', $path, array(), $params);
+    public function post($path, $params = array()) {
+        return $this->request('post', $path, array(), $params);
     }
 
-    public static function delete($path) {
-        return self::request('delete', $path);
+    public function delete($path) {
+        return $this->request('delete', $path);
     }
 
-    public static function put($path, $body = '', $headers = array()) {
-        return self::request('put', $path, $headers, $body);
+    public function put($path, $body = '', $headers = array()) {
+        return $this->request('put', $path, $headers, $body);
     }
 
-    protected static function request($method, $path, $headers = array(), $argsOrBody = array()) {
-        $instance = self::getInstance();
+    protected function request($method, $path, $headers = array(), $argsOrBody = array()) {
         $expand = array();
-        $request = $instance->adapter->$method($path, $headers, $argsOrBody);
+        $request = $this->adapter->$method($path, $headers, $argsOrBody);
         $request->getQuery()->setAggregator(new RailsQueryAggregator);
         try {
             $response = $request->send();

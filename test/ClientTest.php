@@ -15,7 +15,7 @@ class ClientTest extends Delighted\TestCase {
         $client = new ClientPublicConstructorForTest(array());
     }
     public function testInstantiatingClientWithApiKey() {
-        $client = Delighted\Client::getInstance(array('apiKey' => '123abc'));
+        $client = new Delighted\Client(array('apiKey' => '123abc'));
         $this->assertInstanceOf('Delighted\\Client', $client);
     }
 }
