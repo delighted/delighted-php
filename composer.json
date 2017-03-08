@@ -6,7 +6,7 @@
     "license": "MIT",
     "homepage": "http://github.com/delighted/delighted-php",
     "require": {
-        "guzzle/guzzle": "~3.8",
+        "guzzle/guzzle": "~3.8.0",
         "php": ">= 5.3.3"
     },
     "authors": [
