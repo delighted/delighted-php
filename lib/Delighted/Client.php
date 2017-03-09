@@ -2,8 +2,6 @@
 
 namespace Delighted;
 
-require __DIR__ . '/Version.php';
-
 use Exception;
 use GuzzleHttp\Psr7\Request;
 
