@@ -6,34 +6,51 @@ class SurveyResponse extends Resource {
 
     protected $expandable = array('person' => '\Delighted\Person');
 
-    public static function create($props = array()) {
-        $response = Client::post('survey_responses', $props);
+    public static function create($props = array(), Client $client = null) {
+        if (is_null($client)) {
+            $client = Client::getInstance();
+        }
+
+        $response = $client->post('survey_responses', $props);
         return new SurveyResponse($response);
     }
 
-    public static function retrieve($id, $params = array()) {
+    public static function retrieve($id, $params = array(), Client $client = null) {
         if (empty($id)) {
             throw new \InvalidArgumentException("You must pass a survey response ID to retrieve");
         }
+        if (is_null($client)) {
+            $client = Client::getInstance();
+        }
+
         $path = 'survey_responses/' . urlencode($id);
-        $response = Client::get($path, $params);
+
+        $response = $client->get($path, $params);
         return new SurveyResponse($response);
     }
 
-    public static function all($params = array()) {
+    public static function all($params = array(), Client $client = null) {
+        if (is_null($client)) {
+            $client = Client::getInstance();
+        }
+
         $r = array();
-        $responses =  Client::get('survey_responses', $params);
+        $responses =  $client->get('survey_responses', $params);
         foreach ($responses as $response) {
             $r[] = new SurveyResponse($response);
         }
         return $r;
     }
 
-    public function save() {
+    public function save(Client $client = null) {
         $params = $this->__data;
         $path = 'survey_responses/' . urlencode($params['id']);
         unset($params['id']);
-        $response = Client::put($path, json_encode($this->doJsonSerialize($params)), array('Content-Type' => 'application/json'));
+        if (is_null($client)) {
+            $client = Client::getInstance();
+        }
+
+        $response = $client->put($path, json_encode($this->doJsonSerialize($params)), array('Content-Type' => 'application/json'));
         return new SurveyResponse($response);
     }
 
