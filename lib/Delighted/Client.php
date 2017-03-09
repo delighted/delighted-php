@@ -2,6 +2,7 @@
 
 namespace Delighted;
 
+require __DIR__ . '/Version.php';
 
 use Exception;
 use GuzzleHttp\Psr7\Request;
@@ -12,17 +13,18 @@ class Client
 {
 
     const DEFAULT_BASE_URL = 'https://api.delighted.com/v1/';
-    protected static $instance = null;
-    protected static $apiKey = null;
-
+    protected $apiKey = null;
     protected $adapter = null;
+
+    protected static $instance = null;
+    protected static $sharedApiKey = null;
 
     protected function __construct(array $options = [])
     {
         if (! isset($options['apiKey'])) {
             throw new \InvalidArgumentException('No apiKey specified');
         }
-        self::$apiKey = $options['apiKey'];
+        $this->apiKey = $options['apiKey'];
         unset($options['apiKey']);
 
         if (isset($options['baseUrl'])) {
@@ -35,7 +37,7 @@ class Client
         if (isset($options['auth'])) {
             $auth = $options['auth'];
         } else {
-            $auth = [self::$apiKey, '', 'Basic'];
+            $auth = [$this->apiKey, '', 'Basic'];
         }
 
         $params = [
@@ -55,10 +57,11 @@ class Client
     public static function getInstance(array $options = null)
     {
         if (is_null(self::$instance)) {
-            if ((! isset($options['apiKey'])) && isset(self::$apiKey)) {
-                $options['apiKey'] = self::$apiKey;
+            if (! isset($options['apiKey']) && isset(self::$sharedApiKey)) {
+                $options['apiKey'] = self::$sharedApiKey;
             }
             self::$instance = new static($options);
+            self::$sharedApiKey = $options['apiKey'];
         }
 
         return self::$instance;
@@ -66,18 +69,18 @@ class Client
 
     public static function setApiKey($key)
     {
-        self::$apiKey = $key;
+        self::$sharedApiKey = $key;
     }
 
-    public static function get($path, array $params = [])
+    public function get($path, array $params = [])
     {
-        $query = self::convertQueryStringToRubyStyle($params);
+        $query = $this->convertQueryStringToRubyStyle($params);
         $args = ! empty($query) ? ['query' => $query] : [];
 
-        return self::request('get', $path, [], $args);
+        return $this->request('get', $path, [], $args);
     }
 
-    public static function convertQueryStringToRubyStyle(array $params = [])
+    public function convertQueryStringToRubyStyle(array $params = [])
     {
         if (empty($params)) {
             return null;
@@ -90,28 +93,26 @@ class Client
         return rawurldecode($string);
     }
 
-    public static function post($path, $params = [])
+    public function post($path, $params = [])
     {
-        return self::request('post', $path, [], ['form_params' => $params]);
+        return $this->request('post', $path, [], ['form_params' => $params]);
     }
 
-    public static function delete($path)
+    public function delete($path)
     {
-        return self::request('delete', $path);
+        return $this->request('delete', $path);
     }
 
-    public static function put($path, $body = '', $headers = [])
+    public function put($path, $body = '', $headers = [])
     {
-        return self::request('put', $path, $headers, ['body' => $body]);
+        return $this->request('put', $path, $headers, ['body' => $body]);
     }
 
-    protected static function request($method, $path, $headers = [], $argsOrBody = [])
+    protected function request($method, $path, $headers = [], $argsOrBody = [])
     {
-        $instance = self::getInstance();
-
         try {
             $request = new Request($method, $path, $headers);
-            $response = $instance->adapter->send($request, $argsOrBody);
+            $response = $this->adapter->send($request, $argsOrBody);
 
             return json_decode((string) $response->getBody(), true);
         } catch (Exception $e) {

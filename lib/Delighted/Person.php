@@ -4,9 +4,13 @@ namespace Delighted;
 
 class Person extends Resource
 {
-    public static function create($props = [])
+    public static function create($props = [], Client $client = null)
     {
-        $response = Client::post('people', $props);
+        if (is_null($client)) {
+            $client = Client::getInstance();
+        }
+
+        $response = $client->post('people', $props);
 
         return new Person($response);
     }
