@@ -1,13 +1,14 @@
 <?php
 
-class RailsQueryAggregatorTest extends Delighted\TestCase {
+class RailsQueryAggregatorTest extends Delighted\TestCase
+{
 
     public function testAggregate()
     {
-        $value = array(
-            'num' => array('a', 'b', 'c'),
-            'assoc' => array('a' => 'Ann', 'b' => 'Bob'),
-        );
+        $value = [
+            'num'   => ['a', 'b', 'c'],
+            'assoc' => ['a' => 'Ann', 'b' => 'Bob'],
+        ];
 
         $query = new \Guzzle\Http\QueryString($value);
         $query->setAggregator(new \Delighted\RailsQueryAggregator());
