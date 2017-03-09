@@ -2,4 +2,4 @@
 
 namespace Delighted;
 
-const VERSION = '1.0.0a1';
+const VERSION = '2.0.0';
