@@ -2,8 +2,10 @@
 
 namespace Delighted;
 
-class SurveyRequest {
-    public static function deletePending($params = array(), Client $client = null) {
+class SurveyRequest
+{
+    public static function deletePending($params = [], Client $client = null)
+    {
         if (is_null($client)) {
             $client = Client::getInstance();
         }

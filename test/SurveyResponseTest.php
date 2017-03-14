@@ -1,10 +1,12 @@
 <?php
 
-class SurveyResponseTest extends Delighted\TestCase {
+class SurveyResponseTest extends Delighted\TestCase
+{
 
-    public function testCreatingASurveyResponse() {
-        $data = array('person' => '123', 'score' => 10);
-        $this->addMockResponse(200, json_encode(array('id' => '456') + $data));
+    public function testCreatingASurveyResponse()
+    {
+        $data = ['person' => '123', 'score' => 10];
+        $this->addMockResponse(200, json_encode(['id' => '456'] + $data));
 
         $surveyResponse = \Delighted\SurveyResponse::create($data);
         $this->assertInstanceOf('Delighted\SurveyResponse', $surveyResponse);
@@ -19,8 +21,9 @@ class SurveyResponseTest extends Delighted\TestCase {
         $this->assertRequestParamsEquals($data, $req);
     }
 
-    public function testRetrievingASurveyResponse() {
-        $this->addMockResponse(200, json_encode(array('id' => '456', 'person' => '123', 'score' => 10)));
+    public function testRetrievingASurveyResponse()
+    {
+        $this->addMockResponse(200, json_encode(['id' => '456', 'person' => '123', 'score' => 10]));
 
         $surveyResponse = \Delighted\SurveyResponse::retrieve('456');
         $this->assertInstanceOf('Delighted\SurveyResponse', $surveyResponse);
@@ -34,10 +37,11 @@ class SurveyResponseTest extends Delighted\TestCase {
         $this->assertEquals('GET', $req->getMethod());
     }
 
-    public function testRetrievingASurveyResponseExpandPerson() {
-        $this->addMockResponse(200, json_encode(array('id' => '456', 'person' => array('id' => '123', 'email' => 'foo@bar.com'), 'score' => 10)));
+    public function testRetrievingASurveyResponseExpandPerson()
+    {
+        $this->addMockResponse(200, json_encode(['id' => '456', 'person' => ['id' => '123', 'email' => 'foo@bar.com'], 'score' => 10]));
 
-        $surveyResponse = \Delighted\SurveyResponse::retrieve('456', array('expand' => array('person')));
+        $surveyResponse = \Delighted\SurveyResponse::retrieve('456', ['expand' => ['person']]);
         $this->assertInstanceOf('Delighted\SurveyResponse', $surveyResponse);
         $this->assertObjectPropertyIs(10, $surveyResponse, 'score');
         $this->assertObjectPropertyIs('456', $surveyResponse, 'id');
@@ -51,12 +55,16 @@ class SurveyResponseTest extends Delighted\TestCase {
         $this->assertEquals('GET', $req->getMethod());
     }
 
-    public function testUpdatingASurveyResponse() {
-        $data = array('person' => '123', 'score' => 10);
-        $this->addMockResponse(200, json_encode(array('id' => '456') + $data));
+    public function testUpdatingASurveyResponse()
+    {
+        $data = ['person' => '123', 'score' => 10];
+        $this->addMockResponse(200, json_encode(['id' => '456'] + $data));
 
-        $surveyResponse = new \Delighted\SurveyResponse(array('id' => '456',
-        'person' => '321', 'score' => 1));
+        $surveyResponse = new \Delighted\SurveyResponse([
+            'id'     => '456',
+            'person' => '321',
+            'score'  => 1,
+        ]);
         $surveyResponse->person = '123';
         $surveyResponse->score = 10;
         $result = $surveyResponse->save();
@@ -72,15 +80,18 @@ class SurveyResponseTest extends Delighted\TestCase {
         $this->assertRequestBodyEquals(json_encode($data), $req);
     }
 
-    public function testListingAllSurveyResponses() {
-        $data = array(array('id' => '123', 'comment' => 'One'),
-        array('id' => '456', 'comment' => 'Two'));
+    public function testListingAllSurveyResponses()
+    {
+        $data = [
+            ['id' => '123', 'comment' => 'One'],
+            ['id' => '456', 'comment' => 'Two'],
+        ];
         $this->addMockResponse(200, json_encode($data));
 
-        $surveyResponses = \Delighted\SurveyResponse::all(array('order' => 'desc'));
+        $surveyResponses = \Delighted\SurveyResponse::all(['order' => 'desc']);
         $this->assertInternalType('array', $surveyResponses);
         $this->assertEquals(2, count($surveyResponses));
-        foreach($surveyResponses as $i => $surveyResponse) {
+        foreach ($surveyResponses as $i => $surveyResponse) {
             $this->assertInstanceOf('\Delighted\SurveyResponse', $surveyResponse);
             foreach ($data[$i] as $k => $v) {
                 $this->assertObjectPropertyIs($v, $surveyResponse, $k);
@@ -93,15 +104,18 @@ class SurveyResponseTest extends Delighted\TestCase {
         $this->assertEquals('GET', $req->getMethod());
     }
 
-    public function testListingAllSurveyResponsesExpandPerson() {
-        $data = array(array('id' => '123', 'comment' => 'One', 'person' => array('id' => '123', 'email' => 'foo@bar.com')),
-        array('id' => '456', 'comment' => 'Two', 'person' => array('id' => '123', 'email' => 'foo@bar.com')));
+    public function testListingAllSurveyResponsesExpandPerson()
+    {
+        $data = [
+            ['id' => '123', 'comment' => 'One', 'person' => ['id' => '123', 'email' => 'foo@bar.com']],
+            ['id' => '456', 'comment' => 'Two', 'person' => ['id' => '123', 'email' => 'foo@bar.com']],
+        ];
         $this->addMockResponse(200, json_encode($data));
 
-        $surveyResponses = \Delighted\SurveyResponse::all(array('expand' => array('person')));
+        $surveyResponses = \Delighted\SurveyResponse::all(['expand' => ['person']]);
         $this->assertInternalType('array', $surveyResponses);
         $this->assertEquals(2, count($surveyResponses));
-        foreach($surveyResponses as $i => $surveyResponse) {
+        foreach ($surveyResponses as $i => $surveyResponse) {
             $this->assertInstanceOf('\Delighted\SurveyResponse', $surveyResponse);
             foreach ($data[$i] as $k => $v) {
                 if ($k == 'person') {

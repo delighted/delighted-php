@@ -5,10 +5,6 @@
     "keywords": ["delighted"],
     "license": "MIT",
     "homepage": "http://github.com/delighted/delighted-php",
-    "require": {
-        "guzzle/guzzle": "~3.8",
-        "php": ">= 5.3.3"
-    },
     "authors": [
         {
             "name": "Ben Turner",
@@ -19,15 +15,21 @@
             "email": "david.sklar@gmail.com"
         }
     ],
+    "require": {
+        "php": ">=5.5",
+        "guzzlehttp/guzzle": "^6.2"
+    },
     "require-dev": {
-        "phpunit/phpunit": "~4.5"
+        "phpunit/phpunit": "~4.5",
+        "symfony/var-dumper": "^3.2"
     },
     "autoload": {
         "psr-4": { "Delighted\\": "lib/Delighted/" }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0-dev"
+            "dev-master": "1.0-dev",
+            "dev-2.x": "2.0-dev"
         }
     }
 }
