@@ -226,3 +226,9 @@ print $metrics->nps;
 4. Commit your changes (`git commit -am 'Add some feature'`)
 5. Push to the branch (`git push origin my-new-feature`)
 6. Create new Pull Request
+
+## Releasing
+
+- Bump the version in `lib/Delighted/Version.php`.
+- Update the README and CHANGELOD as needed.
+- Tag the commit for release and push (Packagist will pick up the release from the tag).
