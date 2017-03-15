@@ -17,7 +17,7 @@ class Client
     protected static $instance = null;
     protected static $sharedApiKey = null;
 
-    protected function __construct(array $options = [])
+    public function __construct(array $options = [])
     {
         if (! isset($options['apiKey'])) {
             throw new \InvalidArgumentException('No apiKey specified');

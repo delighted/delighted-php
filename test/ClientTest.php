@@ -1,13 +1,5 @@
 <?php
 
-class ClientPublicConstructorForTest extends \Delighted\Client
-{
-    public function __construct($arg = [])
-    {
-        parent::__construct($arg);
-    }
-}
-
 class ClientTest extends Delighted\TestCase
 {
 
@@ -16,7 +8,7 @@ class ClientTest extends Delighted\TestCase
      */
     public function testInstantiatingClientRequiresApiKey()
     {
-        $client = new ClientPublicConstructorForTest([]);
+        $client = new Delighted\Client([]);
     }
 
     public function testInstantiatingClientWithApiKey()
