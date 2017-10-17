@@ -229,6 +229,7 @@ print $metrics->nps;
 
 ## Releasing
 
-- Bump the version in `lib/Delighted/Version.php`.
-- Update the README and CHANGELOD as needed.
-- Tag the commit for release and push (Packagist will pick up the release from the tag).
+1. Bump the version in `lib/Delighted/Version.php`.
+2. Update the README and CHANGELOG as needed.
+3. Tag the commit for release.
+4. Push (Packagist will pick up the release from the tag).
