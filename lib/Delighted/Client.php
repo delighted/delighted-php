@@ -117,7 +117,7 @@ class Client
             $r = $e->getResponse();
             $code = $r->getStatusCode();
             $body = [];
-            if (preg_match('#application/json(;|$)#', $r->getContentType())) {
+            if (preg_match('#application/json(;|$)#', $r->getHeader('Content-Type')[0])) {
                 $body = json_decode((string) $r->getBody(), true);
             }
             throw new RequestException($code, $body, $e);
