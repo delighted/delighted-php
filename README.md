@@ -187,6 +187,26 @@ $metrics = \Delighted\Metrics::retrieve([
                                         ]);
 ```
 
+## Rate limits
+
+If a request is rate limited, a `\Delighted\RequestException` exception is raised. You can rescue that exception to implement exponential backoff or retry strategies. The exception provides a `getRetryAfter()` method to tell you how many seconds you should wait before retrying. For example:
+
+```php
+try {
+    $metrics = \Delighted\Metrics::retrieve();
+} catch (Delighted\RequestException $e) {
+    $errorCode = $e->getCode();
+
+    if ($errorCode == 429) { // rate limited
+        $retryAfterSeconds = e->getRetryAfter();
+        // wait for $retryAfterSeconds before retrying
+        // add your retry strategy here ...
+    } else {
+        // some other error
+    }
+}
+```
+
 ## Advanced Configuration and Testing
 
 The various Delighted resource methods use a shared client object to make the HTTP requests to the Delighted server. To change how that shared client object works, you can pass an array of options to the `\Delighted\Client::getInstance()` method (before you call any resource methods) that control its behavior.

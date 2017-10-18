@@ -40,5 +40,6 @@ class ClientTest extends Delighted\TestCase
         }
         $this->assertInstanceOf('Delighted\\RequestException', $e);
         $this->assertEquals(5, $e->getRetryAfter());
+        $this->assertEquals(429, $e->getCode());
     }
 }
