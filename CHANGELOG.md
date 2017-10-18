@@ -2,7 +2,7 @@
 
 - Add support for 429 rate limit responses
 
-## 2.0.0-beta
+## 2.0.0 (Prerelease)
 
 - Updated Guzzle to 6.x version [#10](https://github.com/delighted/delighted-php/pull/10)
 - Increased minimum php requirement to 5.5 [#10](https://github.com/delighted/delighted-php/pull/10)
