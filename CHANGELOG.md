@@ -1,4 +1,4 @@
-## 2.1.0 (Unreleased)
+## 2.1.0 (Prerelease)
 
 - Add support for 429 rate limit responses
 
