@@ -232,7 +232,7 @@ $mock_response = new \GuzzleHttp\Psr7\Response(200, [], ['nps' => 10]);
 $mock_handler = new \GuzzleHttp\Handler\MockHandler([$mock_response]);
 $handler_stack = \GuzzleHttp\HandlerStack::create($mock_handler);        
 $client = \Delighted\TestClient::getInstance(['apiKey' => 'xyzzy', 'handler' => $handler_stack]);
-$metrics = Delighted\Metrics::retrieve();
+$metrics = Delighted\Metrics::retrieve(['client' => $client]);
 
 // This prints 10 -- the value comes from the mock response
 print $metrics->nps;
