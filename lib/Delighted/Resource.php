@@ -7,6 +7,24 @@ class Resource implements JSONSerializable
 
     protected $__data = [];
 
+    public static function identifierString($idAssoc = array()) {
+        foreach ($idAssoc as $name => $value) {
+            if (isset($name) && isset($value)) {
+                $identifierName = $name;
+                $identifierValue = $value;
+                break;
+            }
+        }
+
+        if ($identifierName == "id") {
+            return $identifierValue;
+        } elseif (isset($identifierName) && isset($identifierValue)) {
+            return $identifierName . ":" . $identifierValue;
+        } else {
+            return;
+        }
+    }
+
     public function __construct($data = [])
     {
         if (isset($this->expandable)) {
