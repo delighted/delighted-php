@@ -1,3 +1,7 @@
+## 2.2.0 (2018-05-10)
+
+- Adds support for deleting people
+
 ## 2.1.0 (2017-10-18)
 
 - Add support for 429 rate limit responses
