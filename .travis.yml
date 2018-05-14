@@ -7,4 +7,8 @@ php:
   - 7.1
   - hhvm
 
+# Due to an incompatibility between HHVM & PHPUnit, we must install a specific oleer version of PHPUnit
+before_script:
+  - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
+
 script: ./run-tests.php
