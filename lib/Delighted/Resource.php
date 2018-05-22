@@ -7,13 +7,13 @@ class Resource implements JSONSerializable
 
     protected $__data = [];
 
-    public static function identifierString($idAssoc = array()) {
-        if (count($idAssoc) != 1) {
+    public static function identifierString($identifierAssoc = array()) {
+        if (count($identifierAssoc) != 1) {
             throw new \InvalidArgumentException("You must pass exactly one identifier");
         }
 
-        $identifierName = reset(array_keys($idAssoc));
-        $identifierValue = $idAssoc[$identifierName];
+        $identifierName = reset(array_keys($identifierAssoc));
+        $identifierValue = $identifierAssoc[$identifierName];
 
         if (strval($identifierName) == "id") {
             return strval($identifierValue);
