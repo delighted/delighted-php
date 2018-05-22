@@ -15,8 +15,8 @@ class Resource implements JSONSerializable
         $identifierName = reset(array_keys($idAssoc));
         $identifierValue = $idAssoc[$identifierName];
 
-        if ($identifierName == "id") {
-            return $identifierValue;
+        if (strval($identifierName) == "id") {
+            return strval($identifierValue);
         } elseif (isset($identifierName) && isset($identifierValue)) {
             return $identifierName . ":" . $identifierValue;
         } else {
