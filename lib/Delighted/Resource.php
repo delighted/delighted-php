@@ -12,7 +12,8 @@ class Resource implements JSONSerializable
             throw new \InvalidArgumentException("You must pass exactly one identifier");
         }
 
-        $identifierName = reset(array_keys($identifierAssoc));
+        $identifierKeys = array_keys($identifierAssoc);
+        $identifierName = reset($identifierKeys);
         $identifierValue = $identifierAssoc[$identifierName];
 
         if (strval($identifierName) == "id") {
