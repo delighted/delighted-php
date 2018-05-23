@@ -1,4 +1,4 @@
-## 2.2.0-rc1 (2018-05-22)
+## 2.2.0 (2018-05-22)
 
 - Adds support for deleting people
 
