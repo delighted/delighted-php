@@ -96,6 +96,17 @@ $bounces = \Delighted\Bounce::all()
 $bounces_p2 = \Delighted\Bounce::all(['page' => 2]);
 ```
 
+Deleting a person and all of the data associated with them:
+
+```php
+// Delete by person id
+\Delighted\Person::delete(array('id' => 42));
+// Delete by email address
+\Delighted\Person::delete(array('email' => 'test@example.com'));
+// Delete by phone number (must be E.164 format)
+\Delighted\Person::delete(array('phone_number' => '+14155551212'));
+```
+
 Deleting pending survey requests
 
 ```php

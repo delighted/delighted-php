@@ -20,6 +20,35 @@ class PeopleTest extends Delighted\TestCase
         $this->assertRequestParamsEquals($data, $req);
     }
 
+    public function testDeletingPersonByMultipleIdentifiers() {
+        try {
+            $result = \Delighted\Person::delete(array('id' => 42, 'email' => 'foo@example.com'));
+        } catch (Exception $e) {
+        }
+        $this->assertInstanceOf('InvalidArgumentException', $e);
+    }
+
+    public function testDeletingPersonById() {
+        $this->addMockResponse(202, json_encode(array('ok' => true)));
+
+        $result = \Delighted\Person::delete(array('id' => 42));
+        $this->assertSame(array('ok' => true), $result);
+    }
+
+    public function testDeletingPersonByEmail() {
+        $this->addMockResponse(202, json_encode(array('ok' => true)));
+
+        $result = \Delighted\Person::delete(array('email' => 'foo@example.com'));
+        $this->assertSame(array('ok' => true), $result);
+    }
+
+    public function testDeletingPersonByPhoneNumber() {
+        $this->addMockResponse(202, json_encode(array('ok' => true)));
+
+        $result = \Delighted\Person::delete(array('phone_number' => '+14155551212'));
+        $this->assertSame(array('ok' => true), $result);
+    }
+
     public function testDeletingPendingSurveyRequestsForAPerson()
     {
         $email = 'foo@bar.com';
