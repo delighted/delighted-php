@@ -29,7 +29,9 @@
         "symfony/var-dumper": "^3.2"
     },
     "autoload": {
-        "psr-4": { "Delighted\\": "lib/Delighted/" }
+        "psr-0": {
+            "Delighted": "src/"
+        }
     },
     "autoload-dev": {
         "psr-4": {
