@@ -231,18 +231,29 @@ $myUrl = 'http://localhost/delighted-mock/';
 
 You can also easily mock Delighted API requests and responses by following the pattern that the API client's test cases use:
 
-- Use the `\Delighted\TestClient` class instead of `Delighted\Client`
-- Create a `\GuzzleHttp\Handler\MockHandler` to mock the requests. Because the `$client` is a shared instance, you'll want to use a shared `$mock_handler`, too.
-- Create `\GuzzleHttp\HandlerStack` and pass to the client.
+- Create a `\Http\Mock\Client` to mock the requests.
+- Add this to your tests
+```php
+/**
+ * @var \Http\Mock\Client
+ */
+protected $mockClient;
+
+protected function setUp()
+{
+    $this->mockClient = new \Http\Mock\Client();
+    TestClient::setHttpClient($this->mockClient);
+}
+```
 - Make assertions about the request and response as desired.
 
 For example:
 
 ```php
-$mock_response = new \GuzzleHttp\Psr7\Response(200, [], ['nps' => 10]);
-$mock_handler = new \GuzzleHttp\Handler\MockHandler([$mock_response]);
-$handler_stack = \GuzzleHttp\HandlerStack::create($mock_handler);        
-$client = \Delighted\TestClient::getInstance(['apiKey' => 'xyzzy', 'handler' => $handler_stack]);
+$mockClient = new \Http\Mock\Client();
+$mockClient->addResponse(new \GuzzleHttp\Psr7\Response(200, [], ['nps' => 10]));
+\Delighted\Client::setHttpClient($mockClient);
+$client = \Delighted\Client::getInstance(['apiKey' => 'xyzzy']);
 $metrics = Delighted\Metrics::retrieve([], $client);
 
 // This prints 10 -- the value comes from the mock response

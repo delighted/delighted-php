@@ -2,6 +2,8 @@
 
 namespace Delighted\Tests;
 
+use Exception;
+
 class PeopleTest extends TestCase
 {
 

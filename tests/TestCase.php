@@ -2,34 +2,31 @@
 
 namespace Delighted\Tests;
 
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
+use Delighted\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit_Framework_TestCase;
+use Psr\Http\Message\RequestInterface;
 
 class TestCase extends PHPUnit_Framework_TestCase
 {
-    /** @var TestClient */
+    /** @var Client */
     protected $client;
 
-    /** @var \GuzzleHttp\HandlerStack */
-    protected static $mock_stack;
-
-    /** @var \GuzzleHttp\Handler\MockHandler */
-    protected static $mock_handler;
+    /**
+     * @var \Http\Mock\Client
+     */
+    protected $mockClient;
 
     public function __construct($opts = [])
     {
-        if (! self::$mock_stack) {
-            self::$mock_stack = HandlerStack::create(new MockHandler());
-        }
-        $this->client = TestClient::getInstance(['apiKey' => 'abc123', 'handler' => self::$mock_stack]);
+        $this->client = Client::getInstance(['apiKey' => 'abc123']);
     }
 
     protected function setUp()
     {
-
+        $this->mockClient = new \Http\Mock\Client();
+        Client::setHttpClient($this->mockClient);
     }
 
     protected function assertObjectPropertyIs($value, $object, $property)
@@ -57,23 +54,19 @@ class TestCase extends PHPUnit_Framework_TestCase
 
     protected function assertRequestAPIPathIs($path, Request $request)
     {
-        $this->assertEquals((string) $this->client->getAdapter()->getConfig('base_uri') . $path, (string) $request->getUri());
+        $this->assertEquals((string) $this->client->getBaseUrl() . $path, (string) $request->getUri());
     }
 
     protected function addMockResponse($statusCode, $body = null, $headers = [])
     {
-        // Create a mock and add response.
-        self::$mock_handler = new MockHandler([
-            new Response($statusCode, $headers, $body),
-        ]);
-        self::$mock_stack->setHandler(self::$mock_handler);
+        $this->mockClient->addResponse(new Response($statusCode, $headers, $body));
     }
 
     /**
-     * @return \GuzzleHttp\Psr7\Request
+     * @return RequestInterface|false
      */
     protected function getMockRequest()
     {
-        return self::$mock_handler->getLastRequest();
+        return $this->mockClient->getLastRequest();
     }
 }

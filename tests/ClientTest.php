@@ -3,10 +3,10 @@
 namespace Delighted\Tests;
 
 use Delighted\Client;
+use Delighted\RequestException;
 
 class ClientTest extends TestCase
 {
-
     /**
      * @expectedException InvalidArgumentException
      */
@@ -40,7 +40,7 @@ class ClientTest extends TestCase
 
         try {
             $response = $client->get('/foo');
-        } catch (Exception $e) {
+        } catch (RequestException $e) {
         }
         $this->assertInstanceOf('Delighted\\RequestException', $e);
         $this->assertEquals(5, $e->getRetryAfter());

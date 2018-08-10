@@ -2,13 +2,15 @@
 
 namespace Delighted;
 
+use Http\Client\Exception\HttpException;
+
 class RequestException extends \Exception
 {
 
     protected $data;
     protected $response;
 
-    public function __construct($code, $data = [], \Exception $e)
+    public function __construct($code, $data = [], HttpException $e)
     {
         parent::__construct($e->getResponse()->getReasonPhrase(), $code, $e);
         $this->data = $data;

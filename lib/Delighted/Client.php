@@ -2,63 +2,73 @@
 
 namespace Delighted;
 
-use Exception;
 use GuzzleHttp\Psr7\Request;
+use Http\Client\Common\Exception\ClientErrorException;
+use Http\Client\Common\Plugin\ErrorPlugin;
+use Http\Client\Common\PluginClient;
+use Http\Client\Exception\HttpException;
+use Http\Discovery\HttpClientDiscovery;
+use Http\Client\HttpClient;
 
 require __DIR__ . '/Version.php';
 
 class Client
 {
-
     const DEFAULT_BASE_URL = 'https://api.delighted.com/v1/';
-    protected $apiKey = null;
-    protected $adapter = null;
 
-    protected static $instance = null;
-    protected static $sharedApiKey = null;
+    /**
+     * @var string
+     */
+    protected $apiKey;
 
-    public function __construct(array $options = [])
+    /**
+     * @var string
+     */
+    protected $baseUrl;
+
+    /**
+     * @var HttpClient
+     */
+    protected static $httpClient;
+
+    protected static $instance;
+    protected static $sharedApiKey;
+
+    public function __construct(array $options = [], HttpClient $httpClient = null)
     {
         if (! isset($options['apiKey'])) {
             throw new \InvalidArgumentException('No apiKey specified');
         }
         $this->apiKey = $options['apiKey'];
-        unset($options['apiKey']);
 
         if (isset($options['baseUrl'])) {
-            $baseUrl = $options['baseUrl'];
-            unset($options['baseUrl']);
+            $this->baseUrl = $options['baseUrl'];
         } else {
-            $baseUrl = self::DEFAULT_BASE_URL;
+            $this->baseUrl = self::DEFAULT_BASE_URL;
         }
 
-        if (isset($options['auth'])) {
-            $auth = $options['auth'];
-        } else {
-            $auth = [$this->apiKey, '', 'Basic'];
-        }
-
-        $params = [
-            'base_uri' => $baseUrl,
-            'auth'     => $auth,
-            'headers'  => [
-                'User-Agent' => 'Delighted PHP API Client ' . \Delighted\VERSION,
-                'Accept'     => 'application/json',
-            ],
-        ];
-        if (isset($options['handler'])) {
-            $params['handler'] = $options['handler'];
-        }
-        $this->adapter = new \GuzzleHttp\Client($params);
+        self::setHttpClient($httpClient);
     }
 
-    public static function getInstance(array $options = null)
+    public static function setHttpClient(HttpClient $httpClient = null)
+    {
+        $errorPlugin = new ErrorPlugin();
+
+        $pluginClient = new PluginClient(
+            $httpClient ?: HttpClientDiscovery::find(),
+            [$errorPlugin]
+        );
+
+        self::$httpClient = $pluginClient;
+    }
+
+    public static function getInstance(array $options = null, HttpClient $httpClient = null)
     {
         if (is_null(self::$instance)) {
             if (! isset($options['apiKey']) && isset(self::$sharedApiKey)) {
                 $options['apiKey'] = self::$sharedApiKey;
             }
-            self::$instance = new static($options);
+            self::$instance = new static($options, $httpClient);
             self::$sharedApiKey = $options['apiKey'];
         }
 
@@ -72,10 +82,7 @@ class Client
 
     public function get($path, array $params = [])
     {
-        $query = $this->convertQueryStringToRubyStyle($params);
-        $args = ! empty($query) ? ['query' => $query] : [];
-
-        return $this->request('get', $path, [], $args);
+        return $this->request('get', $path, [], $params);
     }
 
     public function convertQueryStringToRubyStyle(array $params = [])
@@ -93,7 +100,13 @@ class Client
 
     public function post($path, $params = [])
     {
-        return $this->request('post', $path, [], ['form_params' => $params]);
+        return $this->request(
+            'post',
+            $path,
+            ['Content-Type' => 'application/x-www-form-urlencoded'],
+            [],
+            http_build_query($params, null, '&')
+        );
     }
 
     public function delete($path)
@@ -101,27 +114,49 @@ class Client
         return $this->request('delete', $path);
     }
 
-    public function put($path, $body = '', $headers = [])
+    public function put($path, $body = null, $headers = [])
     {
-        return $this->request('put', $path, $headers, ['body' => $body]);
+        return $this->request('put', $path, $headers, [], $body);
     }
 
-    protected function request($method, $path, $headers = [], $argsOrBody = [])
+    protected function request($method, $path, $headers = [], $query = [], $body = null)
     {
-        try {
-            $request = new Request($method, $path, $headers);
-            $response = $this->adapter->send($request, $argsOrBody);
+        $headers['User-Agent']    = 'Delighted PHP API Client ' . \Delighted\VERSION;
+        $headers['Accept']        = 'application/json';
+        $headers['Authorization'] = 'Basic ' . base64_encode($this->apiKey . ':');
 
-            return json_decode((string) $response->getBody(), true);
-        } catch (Exception $e) {
-            $r = $e->getResponse();
-            $code = $r->getStatusCode();
+        try {
+            $request = new Request($method, $this->getApiUrl($path, $query), $headers, $body);
+
+            $response = self::$httpClient->sendRequest($request);
+
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (ClientErrorException $exception) {
+            $response = $exception->getResponse();
+            $code = $response->getStatusCode();
             $body = [];
-            if (preg_match('#application/json(;|$)#', $r->getHeader('Content-Type')[0])) {
-                $body = json_decode((string) $r->getBody(), true);
+            if (preg_match('#application/json(;|$)#', $response->getHeader('Content-Type')[0])) {
+                $body = json_decode($response->getBody()->getContents(), true);
             }
-            throw new RequestException($code, $body, $e);
+            throw new RequestException($code, $body, $exception);
+        } catch (HttpException $exception) {
+            $response = $exception->getResponse();
+            $code = $response->getStatusCode();
+            $body = [];
+            if (preg_match('#application/json(;|$)#', $response->getHeader('Content-Type')[0])) {
+                $body = json_decode($response->getBody()->getContents(), true);
+            }
+            throw new RequestException($code, $body, $exception);
         }
     }
 
+    private function getApiUrl($uri, array $query = [])
+    {
+        return $this->baseUrl . $uri . (!empty($query) ? '?' . $this->convertQueryStringToRubyStyle($query) : '');
+    }
+
+    public function getBaseUrl()
+    {
+        return $this->baseUrl;
+    }
 }
