@@ -1,6 +1,8 @@
 <?php
 
-class BounceTest extends Delighted\TestCase
+namespace Delighted\Tests;
+
+class BounceTest extends TestCase
 {
 
     public function testListingBounces()

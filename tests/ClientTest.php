@@ -1,6 +1,10 @@
 <?php
 
-class ClientTest extends Delighted\TestCase
+namespace Delighted\Tests;
+
+use Delighted\Client;
+
+class ClientTest extends TestCase
 {
 
     /**
@@ -8,12 +12,12 @@ class ClientTest extends Delighted\TestCase
      */
     public function testInstantiatingClientRequiresApiKey()
     {
-        $client = new Delighted\Client([]);
+        $client = new Client([]);
     }
 
     public function testInstantiatingClientWithApiKey()
     {
-        $client = Delighted\Client::getInstance(['apiKey' => '123abc']);
+        $client = Client::getInstance(['apiKey' => '123abc']);
         $this->assertInstanceOf('Delighted\\Client', $client);
     }
 
@@ -31,7 +35,7 @@ class ClientTest extends Delighted\TestCase
 
     public function testRateLimitErrorResponse()
     {
-        $client = Delighted\Client::getInstance(['apiKey' => '123abc']);
+        $client = Client::getInstance(['apiKey' => '123abc']);
         $this->addMockResponse(429, null, ['Content-Type' => 'text/plain', 'Retry-After' => '5']);
 
         try {

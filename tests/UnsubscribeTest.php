@@ -1,6 +1,8 @@
 <?php
 
-class UnsubscribeTest extends Delighted\TestCase
+namespace Delighted\Tests;
+
+class UnsubscribeTest extends TestCase
 {
 
     public function testCreatingUnsubscribe()

@@ -1,6 +1,6 @@
 <?php
 
-namespace Delighted;
+namespace Delighted\Tests;
 
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;

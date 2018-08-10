@@ -26,6 +26,11 @@
     "autoload": {
         "psr-4": { "Delighted\\": "lib/Delighted/" }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Delighted\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev",

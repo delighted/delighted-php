@@ -1,6 +1,8 @@
 <?php
 
-class SurveyResponseTest extends Delighted\TestCase
+namespace Delighted\Tests;
+
+class SurveyResponseTest extends TestCase
 {
 
     public function testCreatingASurveyResponse()

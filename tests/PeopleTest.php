@@ -1,6 +1,8 @@
 <?php
 
-class PeopleTest extends Delighted\TestCase
+namespace Delighted\Tests;
+
+class PeopleTest extends TestCase
 {
 
     public function testCreatingOrUpdatingAPerson()
