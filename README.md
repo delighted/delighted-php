@@ -96,6 +96,17 @@ $bounces = \Delighted\Bounce::all()
 $bounces_p2 = \Delighted\Bounce::all(['page' => 2]);
 ```
 
+Deleting a person and all of the data associated with them:
+
+```php
+// Delete by person id
+\Delighted\Person::delete(array('id' => 42));
+// Delete by email address
+\Delighted\Person::delete(array('email' => 'test@example.com'));
+// Delete by phone number (must be E.164 format)
+\Delighted\Person::delete(array('phone_number' => '+14155551212'));
+```
+
 Deleting pending survey requests
 
 ```php
@@ -187,6 +198,26 @@ $metrics = \Delighted\Metrics::retrieve([
                                         ]);
 ```
 
+## Rate limits
+
+If a request is rate limited, a `\Delighted\RequestException` exception is raised. You can rescue that exception to implement exponential backoff or retry strategies. The exception provides a `getRetryAfter()` method to tell you how many seconds you should wait before retrying. For example:
+
+```php
+try {
+    $metrics = \Delighted\Metrics::retrieve();
+} catch (Delighted\RequestException $e) {
+    $errorCode = $e->getCode();
+
+    if ($errorCode == 429) { // rate limited
+        $retryAfterSeconds = e->getRetryAfter();
+        // wait for $retryAfterSeconds before retrying
+        // add your retry strategy here ...
+    } else {
+        // some other error
+    }
+}
+```
+
 ## Advanced Configuration and Testing
 
 The various Delighted resource methods use a shared client object to make the HTTP requests to the Delighted server. To change how that shared client object works, you can pass an array of options to the `\Delighted\Client::getInstance()` method (before you call any resource methods) that control its behavior.
@@ -212,7 +243,7 @@ $mock_response = new \GuzzleHttp\Psr7\Response(200, [], ['nps' => 10]);
 $mock_handler = new \GuzzleHttp\Handler\MockHandler([$mock_response]);
 $handler_stack = \GuzzleHttp\HandlerStack::create($mock_handler);        
 $client = \Delighted\TestClient::getInstance(['apiKey' => 'xyzzy', 'handler' => $handler_stack]);
-$metrics = Delighted\Metrics::retrieve();
+$metrics = Delighted\Metrics::retrieve([], $client);
 
 // This prints 10 -- the value comes from the mock response
 print $metrics->nps;
@@ -229,6 +260,7 @@ print $metrics->nps;
 
 ## Releasing
 
-- Bump the version in `lib/Delighted/Version.php`.
-- Update the README and CHANGELOD as needed.
-- Tag the commit for release and push (Packagist will pick up the release from the tag).
+1. Bump the version in `lib/Delighted/Version.php`.
+2. Update the README and CHANGELOG as needed.
+3. Tag the commit for release.
+4. Push (Packagist will pick up the release from the tag).

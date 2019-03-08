@@ -7,6 +7,24 @@ class Resource implements JSONSerializable
 
     protected $__data = [];
 
+    public static function identifierString($identifierAssoc = array()) {
+        if (count($identifierAssoc) != 1) {
+            throw new \InvalidArgumentException("You must pass exactly one identifier");
+        }
+
+        $identifierKeys = array_keys($identifierAssoc);
+        $identifierName = reset($identifierKeys);
+        $identifierValue = $identifierAssoc[$identifierName];
+
+        if (strval($identifierName) == "id") {
+            return strval($identifierValue);
+        } elseif (isset($identifierName) && isset($identifierValue)) {
+            return $identifierName . ":" . $identifierValue;
+        } else {
+            return;
+        }
+    }
+
     public function __construct($data = [])
     {
         if (isset($this->expandable)) {
