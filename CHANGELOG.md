@@ -1,3 +1,7 @@
+## 2.3.0 (2019-05-31)
+
+- Adds support for listing active people
+
 ## 2.2.0 (2018-05-22)
 
 - Adds support for deleting people
