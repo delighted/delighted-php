@@ -25,4 +25,19 @@ class Person extends Resource
         $response = $client->delete($path);
         return $response;
     }
+
+    public static function all($params = [], Client $client = null)
+    {
+        if (is_null($client)) {
+            $client = Client::getInstance();
+        }
+
+        $r = [];
+        $responses = $client->get('people', $params);
+        foreach ($responses as $response) {
+            $r[] = new Person($response);
+        }
+
+        return $r;
+    }
 }

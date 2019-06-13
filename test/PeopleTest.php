@@ -79,4 +79,28 @@ class PeopleTest extends Delighted\TestCase
         $this->assertRequestAPIPathIs('people/' . urlencode($email) . '/survey_requests/pending', $req);
         $this->assertRequestHeadersOK($req);
     }
+
+    public function testListingAllPersonPerPage()
+    {
+        $data = [
+            ['id' => '123', 'email' => 'foo@examle.com'],
+            ['id' => '456', 'email' => 'foo2@example.com'],
+        ];
+        $this->addMockResponse(200, json_encode($data));
+
+        $surveyResponses = \Delighted\Person::all(['per_page' => 2]);
+        $this->assertInternalType('array', $surveyResponses);
+        $this->assertEquals(2, count($surveyResponses));
+        foreach ($surveyResponses as $i => $surveyResponse) {
+            $this->assertInstanceOf('\Delighted\Person', $surveyResponse);
+            foreach ($data[$i] as $k => $v) {
+                $this->assertObjectPropertyIs($v, $surveyResponse, $k);
+            }
+        }
+
+        $req = $this->getMockRequest();
+        $this->assertRequestHeadersOK($req);
+        $this->assertRequestAPIPathIs('people?per_page=2', $req);
+        $this->assertEquals('GET', $req->getMethod());
+    }
 }

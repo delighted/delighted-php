@@ -80,6 +80,14 @@ Unsubscribing people:
 \Delighted\Unsubscribe::create(['person_email' => 'ellie@icloud.com'])
 ```
 
+Listing people:
+
+```php
+// List all people, 20 per page, first 2 pages
+$people = \Delighted\Person::all()
+$people_p2 = \Delighted\Person::all(['page' => 2]);
+```
+
 Listing unsubscribed people:
 
 ```php
