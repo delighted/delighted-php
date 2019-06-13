@@ -1,6 +1,8 @@
-## 2.3.0 (2019-05-31)
+## 3.3.0 (2019-06-13)
 
-- Adds support for listing active people
+- Adds support for listing active people [#19](https://github.com/delighted/delighted-php/pull/19)
+- Fixes the serialization of Boolean values [#11](https://github.com/delighted/delighted-php/pull/11)
+- Increases the minimum PHP requirement to 7.1 and drops support for HHVM [#22](https://github.com/delighted/delighted-php/pull/22)
 
 ## 2.2.0 (2018-05-22)
 
