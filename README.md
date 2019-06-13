@@ -6,7 +6,7 @@ Official PHP client for the [Delighted API](https://delighted.com/docs/api).
 
 ## Requirements
 
-- PHP 5.5 or greater
+- PHP 7.1 or greater
 - The [Composer](http://getcomposer.org/) package manager
 - A [Delighted API](https://delighted.com/docs/api) key
 
