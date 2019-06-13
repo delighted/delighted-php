@@ -106,9 +106,23 @@ class Client
         return $this->request('put', $path, $headers, ['body' => $body]);
     }
 
+    protected function cleanFormParams($params)
+    {
+        foreach($params as $key=>$value) {
+            if (is_bool($value)) {
+                $params[$key] = $value == true ? "true" : "false";
+            }
+        }
+
+        return $params;
+    }
+
     protected function request($method, $path, $headers = [], $argsOrBody = [])
     {
         try {
+            if (array_key_exists('form_params', $argsOrBody)) {
+                $argsOrBody['form_params'] = $this->cleanFormParams($argsOrBody['form_params']);
+            }
             $request = new Request($method, $path, $headers);
             $response = $this->adapter->send($request, $argsOrBody);
 
