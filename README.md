@@ -17,7 +17,7 @@ Install via [Composer](http://getcomposer.org/) by adding this to your `composer
 ```
 {
   "require": {
-    "delighted/delighted": "2.*"
+    "delighted/delighted": "3.*"
   }
 }
 ```
