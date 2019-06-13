@@ -6,9 +6,8 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use PHPUnit_Framework_TestCase;
 
-class TestCase extends PHPUnit_Framework_TestCase
+class TestCase extends \PHPUnit\Framework\TestCase
 {
     /** @var TestClient */
     protected $client;
@@ -19,17 +18,15 @@ class TestCase extends PHPUnit_Framework_TestCase
     /** @var \GuzzleHttp\Handler\MockHandler */
     protected static $mock_handler;
 
-    public function __construct($opts = [])
+    public function setUp() {
+        $this->client = TestClient::getInstance(['apiKey' => 'abc123', 'handler' => self::$mock_stack]);
+    }
+
+    public static function setUpBeforeClass()
     {
         if (! self::$mock_stack) {
             self::$mock_stack = HandlerStack::create(new MockHandler());
         }
-        $this->client = TestClient::getInstance(['apiKey' => 'abc123', 'handler' => self::$mock_stack]);
-    }
-
-    protected function setUp()
-    {
-
     }
 
     protected function assertObjectPropertyIs($value, $object, $property)
