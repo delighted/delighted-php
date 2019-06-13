@@ -1,4 +1,4 @@
-## 3.3.0 (2019-06-13)
+## 3.0.0 (2019-06-13)
 
 - Adds support for listing active people [#19](https://github.com/delighted/delighted-php/pull/19)
 - Fixes the serialization of Boolean values [#11](https://github.com/delighted/delighted-php/pull/11)
