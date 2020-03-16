@@ -17,7 +17,7 @@ Install via [Composer](http://getcomposer.org/) by adding this to your `composer
 ```
 {
   "require": {
-    "delighted/delighted": "3.*"
+    "delighted/delighted": "4.*"
   }
 }
 ```
@@ -83,9 +83,28 @@ Unsubscribing people:
 Listing people:
 
 ```php
-// List all people, 20 per page, first 2 pages
-$people = \Delighted\Person::all()
-$people_p2 = \Delighted\Person::all(['page' => 2]);
+// List all people, auto pagination
+// Note: Make sure to handle the possible rate limits error
+$people = \Delighted\Person::list();
+while (true) {
+  try {
+    foreach ($people->autoPagingIterator() as $person) {
+      // Do something with $person
+    }
+    break;
+  } catch (\Delighted\RequestException $e) {
+    // Indicates how long (in seconds) to wait before making this request again
+    $e->getRetryAfter();
+    continue;
+  }
+}
+
+// For convenience, this method can use a sleep to automatically handle rate limits
+$people = \Delighted\Person::list(['auto_handle_rate_limits' => true]);
+foreach ($people->autoPagingIterator() as $person) {
+  // Do something with $person
+}
+
 ```
 
 Listing unsubscribed people:

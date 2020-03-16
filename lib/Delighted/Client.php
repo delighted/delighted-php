@@ -72,6 +72,11 @@ class Client
 
     public function get($path, array $params = [])
     {
+        return $this->get_request($path, $params)['json'];
+    }
+
+    public function get_request($path, array $params = [])
+    {
         $query = $this->convertQueryStringToRubyStyle($params);
         $args = ! empty($query) ? ['query' => $query] : [];
 
@@ -93,17 +98,17 @@ class Client
 
     public function post($path, $params = [])
     {
-        return $this->request('post', $path, [], ['form_params' => $params]);
+        return $this->request('post', $path, [], ['form_params' => $params])['json'];
     }
 
     public function delete($path)
     {
-        return $this->request('delete', $path);
+        return $this->request('delete', $path)['json'];
     }
 
     public function put($path, $body = '', $headers = [])
     {
-        return $this->request('put', $path, $headers, ['body' => $body]);
+        return $this->request('put', $path, $headers, ['body' => $body])['json'];
     }
 
     protected function cleanFormParams($params)
@@ -126,12 +131,13 @@ class Client
             $request = new Request($method, $path, $headers);
             $response = $this->adapter->send($request, $argsOrBody);
 
-            return json_decode((string) $response->getBody(), true);
+            return ['json' => json_decode((string) $response->getBody(), true),
+                'headers' => $response->getHeaders()];
         } catch (Exception $e) {
             $r = $e->getResponse();
             $code = $r->getStatusCode();
             $body = [];
-            if (preg_match('#application/json(;|$)#', $r->getHeader('Content-Type')[0])) {
+            if (preg_match('#application/json(;|$)#', $r->getHeader('Content-Type')[0] ?? '')) {
                 $body = json_decode((string) $r->getBody(), true);
             }
             throw new RequestException($code, $body, $e);

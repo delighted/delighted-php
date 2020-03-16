@@ -21,7 +21,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "~7.0",
-        "symfony/var-dumper": "^3.2"
+        "symfony/var-dumper": "^3.2",
+        "php-mock/php-mock-phpunit": "^2.6"
     },
     "autoload": {
         "psr-4": { "Delighted\\": "lib/Delighted/" }

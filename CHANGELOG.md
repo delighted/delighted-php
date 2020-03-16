@@ -1,3 +1,13 @@
+## 4.0.0-rc1 (Unreleased)
+
+Features:
+
+- Add `\Delighted\Person::list`
+
+Compatibility changes:
+
+- Add support for PHP 7.4
+
 ## 3.0.0 (2019-06-13)
 
 - Adds support for listing active people [#19](https://github.com/delighted/delighted-php/pull/19)
