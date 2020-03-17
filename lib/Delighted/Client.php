@@ -72,10 +72,10 @@ class Client
 
     public function get($path, array $params = [])
     {
-        return $this->get_request($path, $params)['body'];
+        return $this->getRequest($path, $params)['body'];
     }
 
-    public function get_request($path, array $params = [])
+    public function getRequest($path, array $params = [])
     {
         $query = $this->convertQueryStringToRubyStyle($params);
         $args = ! empty($query) ? ['query' => $query] : [];

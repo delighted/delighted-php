@@ -33,9 +33,9 @@ class ListResource
             try {
                 // Get first (or next) page
                 if ($this->iteration_count == 0) {
-                    $response = $this->client->get_request($this->path, $this->opts);
+                    $response = $this->client->getRequest($this->path, $this->opts);
                 } else {
-                    $response = $this->client->get_request($this->next_link);
+                    $response = $this->client->getRequest($this->next_link);
                 }
             } catch (\Delighted\RateLimitedException $e) {
                 if ($auto_handle_rate_limits) {
