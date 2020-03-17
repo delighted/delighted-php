@@ -72,7 +72,7 @@ class Client
 
     public function get($path, array $params = [])
     {
-        return $this->get_request($path, $params)['json'];
+        return $this->get_request($path, $params)['body'];
     }
 
     public function get_request($path, array $params = [])
@@ -98,17 +98,17 @@ class Client
 
     public function post($path, $params = [])
     {
-        return $this->request('post', $path, [], ['form_params' => $params])['json'];
+        return $this->request('post', $path, [], ['form_params' => $params])['body'];
     }
 
     public function delete($path)
     {
-        return $this->request('delete', $path)['json'];
+        return $this->request('delete', $path)['body'];
     }
 
     public function put($path, $body = '', $headers = [])
     {
-        return $this->request('put', $path, $headers, ['body' => $body])['json'];
+        return $this->request('put', $path, $headers, ['body' => $body])['body'];
     }
 
     protected function cleanFormParams($params)
@@ -131,16 +131,27 @@ class Client
             $request = new Request($method, $path, $headers);
             $response = $this->adapter->send($request, $argsOrBody);
 
-            return ['json' => json_decode((string) $response->getBody(), true),
+            return ['body' => json_decode((string) $response->getBody(), true),
                 'headers' => $response->getHeaders()];
         } catch (Exception $e) {
-            $r = $e->getResponse();
-            $code = $r->getStatusCode();
-            $body = [];
-            if (preg_match('#application/json(;|$)#', $r->getHeader('Content-Type')[0] ?? '')) {
-                $body = json_decode((string) $r->getBody(), true);
-            }
-            throw new RequestException($code, $body, $e);
+            $this->handleRequestException($e);
+        }
+    }
+
+    protected function handleRequestException(Exception $e) {
+        $r = $e->getResponse();
+        $code = $r->getStatusCode();
+        switch ($code) {
+            case 429:
+                $message = $r->getReasonPhrase();
+                $retryAfter = (int)($r->getHeader('Retry-After')[0]);
+                throw new RateLimitedException($message, $retryAfter, $e);
+            default:
+                $body = [];
+                if (preg_match('#application/json(;|$)#', $r->getHeader('Content-Type')[0])) {
+                    $body = json_decode((string) $r->getBody(), true);
+                }
+                throw new RequestException($code, $body, $e);
         }
     }
 

@@ -25,9 +25,4 @@ class RequestException extends \Exception
         return $this->response;
     }
 
-    public function getRetryAfter()
-    {
-        return (int)($this->getResponse()->getHeader('Retry-After')[0]);
-    }
-
 }

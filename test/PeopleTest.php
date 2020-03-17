@@ -167,7 +167,7 @@ class PeopleTest extends Delighted\TestCase
         $next_link_header = '<' . $next_link . '>; rel="next"';
         $this->addMultipleMockResponses([
             ['statusCode' => 200, 'headers'=> ['Link' => $next_link_header], 'body' => json_encode($persons_1)],
-            ['statusCode' => 429, 'headers'=> ['Retry-After' => '10'], 'body' => '']
+            ['statusCode' => 429, 'headers'=> ['Retry-After' => '10', 'Content-Type' => 'application/json'], 'body' => '']
         ]);
 
         $people = \Delighted\Person::list();
@@ -177,12 +177,12 @@ class PeopleTest extends Delighted\TestCase
             foreach ($people->autoPagingIterator(['auto_handle_rate_limits' => false]) as $person) {
                 $result[] = $person;
             }
-        } catch (\Delighted\RequestException $exception) {
+        } catch (\Delighted\RateLimitedException $exception) {
             $this->assertEquals($exception->getRetryAfter(), '10');
         }
 
         // Make sure we received an exception
-        $this->assertInstanceOf('\Delighted\RequestException', $exception);
+        $this->assertInstanceOf('\Delighted\RateLimitedException', $exception);
 
         $this->assertEquals(1, count($result));
         $first_person = $result[0];
@@ -209,7 +209,7 @@ class PeopleTest extends Delighted\TestCase
         $next_link_header = '<' . $next_link . '>; rel="next"';
         $this->addMultipleMockResponses([
             ['statusCode' => 200, 'headers'=> ['Link' => $next_link_header], 'body' => json_encode($persons_1)],
-            ['statusCode' => 429, 'headers'=> ['Retry-After' => '3'], 'body' => ''],
+            ['statusCode' => 429, 'headers'=> ['Retry-After' => '3', 'Content-Type' => 'application/json'], 'body' => ''],
             ['statusCode' => 200, 'headers'=> [], 'body' => json_encode($persons_2)],
         ]);
         $sleepSpy = $this->getSleepSpy();
@@ -221,7 +221,7 @@ class PeopleTest extends Delighted\TestCase
             foreach ($people->autoPagingIterator(['auto_handle_rate_limits' => true]) as $person) {
                 $result[] = $person;
             }
-        } catch (\Delighted\RequestException $exception) {
+        } catch (\Delighted\Exception $exception) {
             // Make sure we did not receive an exception
             $this->assertEquals(true, false);
         }

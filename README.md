@@ -92,7 +92,7 @@ while (true) {
       // Do something with $person
     }
     break;
-  } catch (\Delighted\RequestException $e) {
+  } catch (\Delighted\RateLimitedException $e) {
     // Indicates how long (in seconds) to wait before making this request again
     $e->getRetryAfter();
     continue;
@@ -100,8 +100,8 @@ while (true) {
 }
 
 // For convenience, this method can use a sleep to automatically handle rate limits
-$people = \Delighted\Person::list(['auto_handle_rate_limits' => true]);
-foreach ($people->autoPagingIterator() as $person) {
+$people = \Delighted\Person::list();
+foreach ($people->autoPagingIterator(['auto_handle_rate_limits' => true]) as $person) {
   // Do something with $person
 }
 
@@ -227,12 +227,12 @@ $metrics = \Delighted\Metrics::retrieve([
 
 ## Rate limits
 
-If a request is rate limited, a `\Delighted\RequestException` exception is raised. You can rescue that exception to implement exponential backoff or retry strategies. The exception provides a `getRetryAfter()` method to tell you how many seconds you should wait before retrying. For example:
+If a request is rate limited, a `\Delighted\RateLimitedException` exception is raised. You can rescue that exception to implement exponential backoff or retry strategies. The exception provides a `getRetryAfter()` method to tell you how many seconds you should wait before retrying. For example:
 
 ```php
 try {
     $metrics = \Delighted\Metrics::retrieve();
-} catch (Delighted\RequestException $e) {
+} catch (Delighted\RateLimitedException $e) {
     $errorCode = $e->getCode();
 
     if ($errorCode == 429) { // rate limited

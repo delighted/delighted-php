@@ -37,8 +37,8 @@ class ListResource
                 } else {
                     $response = $this->client->get_request($this->next_link);
                 }
-            } catch (\Delighted\RequestException $e) {
-                if ($auto_handle_rate_limits && !empty($e->getRetryAfter())) {
+            } catch (\Delighted\RateLimitedException $e) {
+                if ($auto_handle_rate_limits) {
                     // Sleep and retry call
                     sleep($e->getRetryAfter());
                     continue;
@@ -50,7 +50,7 @@ class ListResource
             $this->iteration_count++;
             $this->next_link = Utils::parse_link_header($response['headers']['Link'] ?? null)['next'] ?? null;
 
-            foreach ($response['json'] as $json) {
+            foreach ($response['body'] as $json) {
                 yield new $this->klass($json);
             }
 
