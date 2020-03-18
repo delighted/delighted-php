@@ -38,7 +38,7 @@ class ClientTest extends Delighted\TestCase
             $response = $client->get('/foo');
         } catch (Exception $e) {
         }
-        $this->assertInstanceOf('Delighted\\RequestException', $e);
+        $this->assertInstanceOf('Delighted\\RateLimitedException', $e);
         $this->assertEquals(5, $e->getRetryAfter());
         $this->assertEquals(429, $e->getCode());
     }

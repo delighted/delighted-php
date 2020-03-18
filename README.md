@@ -17,7 +17,7 @@ Install via [Composer](http://getcomposer.org/) by adding this to your `composer
 ```
 {
   "require": {
-    "delighted/delighted": "3.*"
+    "delighted/delighted": "4.*"
   }
 }
 ```
@@ -83,9 +83,28 @@ Unsubscribing people:
 Listing people:
 
 ```php
-// List all people, 20 per page, first 2 pages
-$people = \Delighted\Person::all()
-$people_p2 = \Delighted\Person::all(['page' => 2]);
+// List all people, auto pagination
+// Note: Make sure to handle the possible rate limits error
+$people = \Delighted\Person::list();
+while (true) {
+  try {
+    foreach ($people->autoPagingIterator() as $person) {
+      // Do something with $person
+    }
+    break;
+  } catch (\Delighted\RateLimitedException $e) {
+    // Indicates how long (in seconds) to wait before making this request again
+    $e->getRetryAfter();
+    continue;
+  }
+}
+
+// For convenience, this method can use a sleep to automatically handle rate limits
+$people = \Delighted\Person::list();
+foreach ($people->autoPagingIterator(['auto_handle_rate_limits' => true]) as $person) {
+  // Do something with $person
+}
+
 ```
 
 Listing unsubscribed people:
@@ -208,12 +227,12 @@ $metrics = \Delighted\Metrics::retrieve([
 
 ## Rate limits
 
-If a request is rate limited, a `\Delighted\RequestException` exception is raised. You can rescue that exception to implement exponential backoff or retry strategies. The exception provides a `getRetryAfter()` method to tell you how many seconds you should wait before retrying. For example:
+If a request is rate limited, a `\Delighted\RateLimitedException` exception is raised. You can rescue that exception to implement exponential backoff or retry strategies. The exception provides a `getRetryAfter()` method to tell you how many seconds you should wait before retrying. For example:
 
 ```php
 try {
     $metrics = \Delighted\Metrics::retrieve();
-} catch (Delighted\RequestException $e) {
+} catch (Delighted\RateLimitedException $e) {
     $errorCode = $e->getCode();
 
     if ($errorCode == 429) { // rate limited
