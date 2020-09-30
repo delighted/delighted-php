@@ -11,7 +11,7 @@ class Unsubscribe extends Resource
             $client = Client::getInstance();
         }
 
-        $response = $client->post('unsubscribes', $params);
+        return $client->post('unsubscribes', $params);
     }
 
     public static function all($params = [], Client $client = null)
