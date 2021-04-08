@@ -12,6 +12,7 @@ class UnsubscribeTest extends Delighted\TestCase
 
         $req = $this->getMockRequest();
         $this->assertEquals('POST', $req->getMethod());
+        $this->assertEquals(['ok' => true], $response);
         $this->assertRequestAPIPathIs('unsubscribes', $req);
         $this->assertRequestHeadersOK($req);
     }
