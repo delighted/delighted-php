@@ -2,6 +2,9 @@
 
 - Return unsubscribe response
 
+Compatibility changes:
+- Add support for Guzzle 7
+
 ## 4.0.0 (2020-03-18)
 
 Features:
