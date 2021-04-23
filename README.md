@@ -225,6 +225,35 @@ $metrics = \Delighted\Metrics::retrieve([
                                         ]);
 ```
 
+Managing Autopilot:
+
+```php
+// Get Autopilot configuration for the `email` platform
+$autopilot = \Delighted\Autopilot::getConfiguration('email');
+
+// List people in Autopilot
+$people_autopilot = \Delighted\Autopilot::listPeople('email');
+foreach ($people_autopilot->autoPagingIterator(['auto_handle_rate_limits' => true]) as $person_autopilot) {
+  // Do something with $person_autopilot
+}
+
+// Add people to Autopilot
+$autopilot = \Delighted\Autopilot::addPerson('email', ['person_email' => 'test@example.com']);
+
+// Add people to Autopilot, with a full set of attributes
+$props = ['customer_id' => 123, 'country' => 'USA', 'question_product_name' => 'The London Trench'];
+$autopilot = \Delighted\Autopilot::addPerson("email", ['person_email' => 'test@example.com', 'properties' => $props]);
+
+// Delete by person id
+\Delighted\Autopilot::deletePerson('email', ['person_id' => 42]);
+
+// Delete by email address
+\Delighted\Autopilot::deletePerson('email', ['person_email' => 'test@example.com']);
+
+// Delete by phone number (must be E.164 format)
+\Delighted\Autopilot::deletePerson('email', ['person_phone_number' => '+14155551212']);
+```
+
 ## Rate limits
 
 If a request is rate limited, a `\Delighted\RateLimitedException` exception is raised. You can rescue that exception to implement exponential backoff or retry strategies. The exception provides a `getRetryAfter()` method to tell you how many seconds you should wait before retrying. For example:

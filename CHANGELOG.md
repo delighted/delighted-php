@@ -1,8 +1,10 @@
-## Unreleased
+## 4.1.0-rc1 (Unreleased)
 
+- Add support for Autopilot API
 - Return unsubscribe response
 
 Compatibility changes:
+
 - Add support for Guzzle 7
 
 ## 4.0.0 (2020-03-18)
