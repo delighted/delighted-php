@@ -231,27 +231,27 @@ Managing Autopilot:
 // Get Autopilot configuration for the `email` platform
 $autopilot = \Delighted\AutopilotConfiguration::retrieve('email');
 
-// List people in AutopilotMembership
-$people_autopilot = \Delighted\AutopilotMembership::list('email');
+// List people in AutopilotMembership for the `email` platform
+$people_autopilot = \Delighted\AutopilotMembership\Email::list();
 foreach ($people_autopilot->autoPagingIterator(['auto_handle_rate_limits' => true]) as $person_autopilot) {
   // Do something with $person_autopilot
 }
 
 // Add people to AutopilotMembership
-$autopilot = \Delighted\AutopilotMembership::create('email', ['person_email' => 'test@example.com']);
+$autopilot = \Delighted\AutopilotMembership\Email::create(['person_email' => 'test@example.com']);
 
 // Add people to AutopilotMembership, with a full set of attributes
 $props = ['customer_id' => 123, 'country' => 'USA', 'question_product_name' => 'The London Trench'];
-$autopilot = \Delighted\AutopilotMembership::create("email", ['person_email' => 'test@example.com', 'properties' => $props]);
+$autopilot = \Delighted\AutopilotMembership\Sms::create(['person_phone_number' => '+14155551212', 'properties' => $props]);
 
 // Delete by person id
-\Delighted\AutopilotMembership::delete('email', ['person_id' => 42]);
+\Delighted\AutopilotMembership\Email::delete(['person_id' => 42]);
 
 // Delete by email address
-\Delighted\AutopilotMembership::delete('email', ['person_email' => 'test@example.com']);
+\Delighted\AutopilotMembership\Email::delete(['person_email' => 'test@example.com']);
 
 // Delete by phone number (must be E.164 format)
-\Delighted\AutopilotMembership::delete('email', ['person_phone_number' => '+14155551212']);
+\Delighted\AutopilotMembership\Sms::delete(['person_phone_number' => '+14155551212']);
 ```
 
 ## Rate limits

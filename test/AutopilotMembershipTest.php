@@ -79,7 +79,7 @@ class AutopilotMembershipTest extends Delighted\TestCase
             ['statusCode' => 200, 'headers'=> [], 'body' => json_encode($persons_2)]
         ]);
 
-        $people = \Delighted\AutopilotMembership::list("email");
+        $people = \Delighted\AutopilotMembership\Email::list();
         $this->assertInstanceOf('Delighted\ListResource', $people);
         $result = [];
         foreach ($people->autoPagingIterator() as $person) {
@@ -89,19 +89,19 @@ class AutopilotMembershipTest extends Delighted\TestCase
 
         $first_autopilot = $result[0];
         $this->assertInstanceOf('Delighted\AutopilotMembership', $first_autopilot);
-        $this->assertEquals(1, $first_autopilot->person["id"]);
-        $this->assertEquals('foo@example.com', $first_autopilot->person["email"]);
-        $this->assertEquals(4, $first_autopilot->next_survey_request["id"]);
+        $this->assertEquals(1, $first_autopilot->person['id']);
+        $this->assertEquals('foo@example.com', $first_autopilot->person['email']);
+        $this->assertEquals(4, $first_autopilot->next_survey_request['id']);
         $second_autopilot = $result[1];
         $this->assertInstanceOf('Delighted\AutopilotMembership', $second_autopilot);
-        $this->assertEquals(2, $second_autopilot->person["id"]);
-        $this->assertEquals('foo2@example.com', $second_autopilot->person["email"]);
-        $this->assertEquals(5, $second_autopilot->next_survey_request["id"]);
+        $this->assertEquals(2, $second_autopilot->person['id']);
+        $this->assertEquals('foo2@example.com', $second_autopilot->person['email']);
+        $this->assertEquals(5, $second_autopilot->next_survey_request['id']);
         $third_autopilot = $result[2];
         $this->assertInstanceOf('Delighted\AutopilotMembership', $third_autopilot);
-        $this->assertEquals(3, $third_autopilot->person["id"]);
-        $this->assertEquals('foo3@example.com', $third_autopilot->person["email"]);
-        $this->assertEquals(10, $third_autopilot->next_survey_request["id"]);
+        $this->assertEquals(3, $third_autopilot->person['id']);
+        $this->assertEquals('foo3@example.com', $third_autopilot->person['email']);
+        $this->assertEquals(10, $third_autopilot->next_survey_request['id']);
 
         $req = $this->getMockRequest();
         $this->assertRequestHeadersOK($req);
@@ -109,7 +109,7 @@ class AutopilotMembershipTest extends Delighted\TestCase
         $this->assertEquals('GET', $req->getMethod());
     }
 
-    public function testAddPerson()
+    public function testAddPersonEmail()
     {
         $data = [
             'person_id' => 1,
@@ -122,13 +122,37 @@ class AutopilotMembershipTest extends Delighted\TestCase
 
         $this->addMockResponse(200, json_encode(['person' => ['id' => 1]]));
 
-        $autopilot = \Delighted\AutopilotMembership::create("email", $data);
+        $autopilot = \Delighted\AutopilotMembership\Email::create($data);
         $this->assertInstanceOf('Delighted\AutopilotMembership', $autopilot);
-        $this->assertEquals(1, $autopilot->person["id"]);
+        $this->assertEquals(1, $autopilot->person['id']);
 
         $req = $this->getMockRequest();
         $this->assertRequestHeadersOK($req);
         $this->assertRequestAPIPathIs('autopilot/email/memberships', $req);
+        $this->assertEquals('POST', $req->getMethod());
+        $this->assertRequestParamsEquals($data, $req);
+    }
+
+    public function testAddPersonSms()
+    {
+        $data = [
+            'person_id' => 4,
+            'person_phone_number' => '+1555555112',
+            'properties' => [
+                'Purchase Experience' => 'Mobile App',
+                'State' => 'CA'
+            ]
+        ];
+
+        $this->addMockResponse(200, json_encode(['person' => ['id' => 5]]));
+
+        $autopilot = \Delighted\AutopilotMembership\Sms::create($data);
+        $this->assertInstanceOf('Delighted\AutopilotMembership', $autopilot);
+        $this->assertEquals(5, $autopilot->person['id']);
+
+        $req = $this->getMockRequest();
+        $this->assertRequestHeadersOK($req);
+        $this->assertRequestAPIPathIs('autopilot/sms/memberships', $req);
         $this->assertEquals('POST', $req->getMethod());
         $this->assertRequestParamsEquals($data, $req);
     }
@@ -139,9 +163,9 @@ class AutopilotMembershipTest extends Delighted\TestCase
 
         $this->addMockResponse(202, json_encode(['person' => ['id' => 1]]));
 
-        $autopilot = \Delighted\AutopilotMembership::delete("email", $data);
+        $autopilot = \Delighted\AutopilotMembership\Email::delete($data);
         $this->assertInstanceOf('Delighted\AutopilotMembership', $autopilot);
-        $this->assertEquals(1, $autopilot->person["id"]);
+        $this->assertEquals(1, $autopilot->person['id']);
 
         $req = $this->getMockRequest();
         $this->assertRequestHeadersOK($req);
