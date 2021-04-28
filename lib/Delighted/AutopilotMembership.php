@@ -2,13 +2,12 @@
 
 namespace Delighted;
 
-class Autopilot extends Resource
+class AutopilotMembership extends Resource
 {
-    protected static $path = 'autopilot/DELIGHTED_PLATFORM';
-    protected static $pathMembership = 'autopilot/DELIGHTED_PLATFORM/memberships';
+    protected static $path = 'autopilot/DELIGHTED_PLATFORM/memberships';
     protected static $platforms = ['email', 'sms'];
 
-    public static function getConfiguration($platform, Client $client = null)
+    public static function list($platform, $params = [], Client $client = null)
     {
         self::validatePlatform($platform);
 
@@ -17,23 +16,10 @@ class Autopilot extends Resource
         }
 
         $path = self::getPath(self::$path, $platform);
-        $response = $client->get($path);
-        return new Autopilot($response);
-    }
-
-    public static function listPeople($platform, $params = [], Client $client = null)
-    {
-        self::validatePlatform($platform);
-
-        if (is_null($client)) {
-            $client = Client::getInstance();
-        }
-
-        $path = self::getPath(self::$pathMembership, $platform);
         return new ListResource(get_class(), $path, $params, $client);
     }
 
-    public static function addPerson($platform, $params = [], Client $client = null)
+    public static function create($platform, $params = [], Client $client = null)
     {
         self::validatePlatform($platform);
 
@@ -41,13 +27,13 @@ class Autopilot extends Resource
             $client = Client::getInstance();
         }
 
-        $path = self::getPath(self::$pathMembership, $platform);
+        $path = self::getPath(self::$path, $platform);
         $response = $client->post($path, $params);
 
-        return new Autopilot($response);
+        return new AutopilotMembership($response);
     }
 
-    public static function deletePerson($platform, $params = [], Client $client = null)
+    public static function delete($platform, $params = [], Client $client = null)
     {
         self::validatePlatform($platform);
 
@@ -55,10 +41,10 @@ class Autopilot extends Resource
             $client = Client::getInstance();
         }
 
-        $path = self::getPath(self::$pathMembership, $platform);
+        $path = self::getPath(self::$path, $platform);
         $response = $client->delete($path, $params);
 
-        return new Autopilot($response);
+        return new AutopilotMembership($response);
     }
 
     private static function validatePlatform($platform)
