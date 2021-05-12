@@ -101,9 +101,9 @@ class Client
         return $this->request('post', $path, [], ['form_params' => $params])['body'];
     }
 
-    public function delete($path)
+    public function delete($path, $params = [])
     {
-        return $this->request('delete', $path)['body'];
+        return $this->request('delete', $path, [], ['form_params' => $params])['body'];
     }
 
     public function put($path, $body = '', $headers = [])
