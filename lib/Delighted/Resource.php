@@ -65,6 +65,7 @@ class Resource implements JSONSerializable
         }
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $data = $this->__data;
