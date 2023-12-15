@@ -1,3 +1,7 @@
+## 4.1.1 (2023-12-14)
+
+- Add `ReturnTypeWillChange` attribute on Resource->jsonSerialize()
+
 ## 4.1.0 (2021-05-12)
 
 - Add support for Autopilot API
