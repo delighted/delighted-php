@@ -1,4 +1,4 @@
-## 4.1.0-rc1 (Unreleased)
+## 4.1.0 (2021-05-12)
 
 - Add support for Autopilot API
 - Return unsubscribe response
